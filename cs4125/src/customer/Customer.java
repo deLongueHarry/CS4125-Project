@@ -9,6 +9,10 @@ public class Customer {
 	private ArrayList<String> allergens;
 	private ArrayList<Voucher> vouchers;
 	
+	public Customer(int custID)	{
+		this.custID = custID;
+	}
+	
 	public Customer(int custID, String custName, int custPoints, ArrayList<String> allergens, String creditCard, ArrayList<Voucher> vouchers)	{
 		this.custID = custID;
 		this.custName = custName;

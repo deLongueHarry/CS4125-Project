@@ -2,10 +2,9 @@ package ui;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import cs4125.Store;
 import goods.*;
 import transactions.*;
+import cs4125.*;
 import customer.Customer;
 import employee.*;
 
@@ -34,13 +33,13 @@ public class TransactionsUI	implements UI{
 			case 0:
 				break;
 			case 1:
-				Sales newSale = createSale(findTransactionID(), Store.products, Store.stockItems);
+				Transactions newSale = createSale(findTransactionID(), Store.products, Store.stockItems);
 				Store.sales.add(newSale);
 				Store.ac.updateAmount(newSale.getAmount(), true);
 				break;
 				
 			case 2:
-				Returns newReturn = createReturn(findTransactionID(), Store.sales, Store.stockItems);
+				Transactions newReturn = createReturn(findTransactionID(), Store.sales, Store.stockItems);
 				Store.returnsList.add(newReturn);
 				Store.ac.updateAmount(newReturn.getAmount(), false);
 				break;
@@ -57,7 +56,7 @@ public class TransactionsUI	implements UI{
 		}
 		
 		else	{
-			Sales newSale = createSale(findTransactionID(), Store.products, Store.stockItems);
+			Transactions newSale = createSale(findTransactionID(), Store.products, Store.stockItems);
 			Store.sales.add(newSale);
 			Store.ac.updateAmount(newSale.getAmount(), true);
 		}
@@ -85,10 +84,10 @@ public class TransactionsUI	implements UI{
 	
 	//Creates a new Sale
 	//Author: Alex
-	public Sales createSale(int transID, ArrayList<Product> products, ArrayList<StockItem> stockItems)	{
-		Sales newSale;
+	public Transactions createSale(int transID, ArrayList<Product> products, ArrayList<StockItem> stockItems)	{
+		//Sales newSale;
 		double amount = 0;
-		int cardNumb = 0;
+		String cardNumb = "";
 		int custID = 0;
 		boolean check = false;
 		ArrayList<StockItem> items = new ArrayList<StockItem>();
@@ -106,7 +105,7 @@ public class TransactionsUI	implements UI{
 				System.out.println("Please give your input in the form of a number");
 			}
 		}
-		Customer current;
+		Customer current = new Customer(custID);
 		for (int p = 0; p < Store.customers.size(); p++)	{
 			if (custID == Store.customers.get(p).getCustID())	{
 				current = Store.customers.get(p);
@@ -133,54 +132,20 @@ public class TransactionsUI	implements UI{
 				if (inputArr[i].equals(products.get(j).getProductName()))	{
 					for (int k = 0; k < stockItems.size(); k++) {
 						if (stockItems.get(k).getProduct() == products.get(j))	{
-							items.add(new StockItem(items.get(items.size()-1).getItmID(), products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getPrice(), stockItems.get(k).getUseBy()));
+							items.add(new StockItem(items.get(items.size()-1).getItmID(), products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getUseBy()));
 						}
 					}
 				}
 			}
 		}
 		//Getting customer card numbers from their profie or adding a new one 
-		ArrayList<Integer> creditCards = current.getCreditCard();
 		check = false;
-		int cardChoice = -123456789;
-		while (!check)	{
-			if (creditCards.size() > 0)	{
-				System.out.println("Please select which of your saved cards you would like to use with their corresponding number, or 0 to add a new card:");
-				for (int i = 0; i < creditCards.size(); i++)
-				{
-					System.out.println(i + ":\t" + creditCards.get(i));
-				}		
-				try
-				{
-					cardChoice = Integer.parseInt(in.nextLine());
-				}
-				catch(Exception e)
-				{
-					System.out.println("Your input must be the number matching the card you'd like to use.");
-				}
-				if ((!(cardChoice == -123456789)) && (!(cardChoice == 0)))
-				{
-					cardNumb = creditCards.get(cardChoice);
-					check = true;
-				}
-			}
-			else	{
-				check = false;
-				while(!check)	{
+		if (current.getCreditCard() != "")	{
+			cardNumb = current.getCreditCard();
+		}
+		else	{
 					System.out.println("Please enter your credit card number now:");
-					try
-					{
-						cardNumb = Integer.parseInt(in.nextLine());
-						creditCards.add(cardNumb);
-						current.setCreditCard(creditCards);
-						check = true;
-					}
-					catch(Exception e)
-					{
-						System.out.println("Please give your input in the form of a number.");
-					}
-				}
-			}
+					cardNumb = in.nextLine();
 		}
 		
 		int voucherChoice = 0;
@@ -225,18 +190,18 @@ public class TransactionsUI	implements UI{
 		}
 
 		//Creates & returns a new Sales object
-		newSale = new Sales(transID, amount, items, custID, cardNumb);
+		TransactionsFactory fact = new TransactionsFactory();
+		Transactions newSale = fact.getTransactions("sale", transID, amount, items, custID, cardNumb);
 		return(newSale);
 	}
 	
 	//Creates a new return
 	//Author: Alex
-	public Returns createReturn(int transID, ArrayList<Sales> sale, ArrayList<StockItem> stockItems)	{
-		Returns newReturn;
+	public Transactions createReturn(int transID, ArrayList<Transactions> sale, ArrayList<StockItem> stockItems)	{
 		double amount = 0;
 		ArrayList<StockItem> items = new ArrayList<StockItem>();
 		int custID = 0;
-		int cardNumb = 0;
+		String cardNumb = "";
 		//Gets the relevant information from the matching sale
 		for (int i = 0; i < sale.size(); i++)	{
 			if (transID == (sale.get(i).getTransID()))	{
@@ -249,16 +214,17 @@ public class TransactionsUI	implements UI{
 		//Returns error message if there are no sales that match
 		if ((amount == 0) && (custID == 0)) {
 			System.out.println("Your transaction ID does not correspond to a sale.");
-			newReturn = new Returns(0, 0, new ArrayList<StockItem>(), 0, 0);
+			Transactions newReturn = new Transactions(0, 0, new ArrayList<StockItem>(), 0, "0");
 			return newReturn;
 		}
 		//Returns the new Return
 		else	{
-			newReturn = new Returns(transID, amount, items, custID, cardNumb);
+			TransactionsFactory fact = new TransactionsFactory();
+			Transactions newReturn = fact.getTransactions("return", transID, amount, items, custID, cardNumb);
 			return newReturn;
 		}
 	}
-
+	
 	//Adds the items to the new Sale
 	//Author: Alex
 	public String addItems(ArrayList<Product> products, Customer current)	{
@@ -326,7 +292,7 @@ public class TransactionsUI	implements UI{
 
 	//Lets user view a transaction
 	//Author: Alex
-	public String viewTransaction(ArrayList<Sales> sale, ArrayList<Returns> returnsList, ArrayList<Product> products)	{
+	public String viewTransaction(ArrayList<Transactions> sale, ArrayList<Transactions> returnsList, ArrayList<Product> products)	{
 		System.out.println("Please input the TransactionID of the transaction you wish to view.");
 		int transID = Integer.parseInt(in.nextLine());
 		int count = 1;

@@ -5,7 +5,7 @@ import goods.StockItem;
 
 public class Returns extends Transactions{
 	
-	public Returns(int transID, double amount, ArrayList<StockItem> items, int custID, int cardNumb)	{
+	public Returns(int transID, double amount, ArrayList<StockItem> items, int custID, String cardNumb)	{
 		super(transID, amount, items, custID, cardNumb);
 	}
 }

@@ -8,13 +8,15 @@ public class Transactions {
 	private double amount;
 	private ArrayList<StockItem> items;
 	private int custID;
-	private int cardNumb;
+	private String cardNumb;
+	
+	public Transactions()	{}
 	
 	public Transactions(int transID)	{
 		this.transID = transID;
 	}
 	
-	public Transactions(int transID, double amount, ArrayList<StockItem> items, int custID, int cardNumb)	{
+	public Transactions(int transID, double amount, ArrayList<StockItem> items, int custID, String cardNumb)	{
 		this.transID = transID;
 		this.amount = amount;
 		this.items = items;
@@ -54,11 +56,11 @@ public class Transactions {
 		this.custID = custID;
 	}
 	
-	public int getCardNumb()	{
+	public String getCardNumb()	{
 		return cardNumb;
 	}
 	
-	public void setCardNumb(int cardNumb)	{
+	public void setCardNumb(String cardNumb)	{
 		this.cardNumb = cardNumb;
 	}
 }

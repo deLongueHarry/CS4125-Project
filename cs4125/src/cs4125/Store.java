@@ -23,8 +23,8 @@ public class Store {
 	public static ArrayList<Order> orders = new ArrayList<Order>();
 	public static ArrayList<StockItem> stockItems = new ArrayList<StockItem>();
 	public static ArrayList<OrderItem> orderItems = new ArrayList<OrderItem>();
-	public static ArrayList<Sales> sales = new ArrayList<>();
-	public static ArrayList<Returns> returnsList = new ArrayList<>();
+	public static ArrayList<Transactions> sales = new ArrayList<>();
+	public static ArrayList<Transactions> returnsList = new ArrayList<>();
 	public static Account ac;
 		
 	public static void main(String[] args) throws IOException {
