@@ -26,6 +26,7 @@ public class StoreUI implements UI {
 					validSelection = true;
 					UI login = new LoginUI();
 					login.startInterface();
+					//LoginUI();
 				}
 				else if (input1 == 0) {
 					break;

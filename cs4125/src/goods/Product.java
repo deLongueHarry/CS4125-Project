@@ -1,20 +1,34 @@
-//change package name if needed
 package goods;
+
+import java.util.ArrayList;
 
 public class Product {
 
 	int productID, minimumOrder;
 	double costPrice;
 	String productName, productType, company;
+	ArrayList<String> allergens;
 	
-	public Product(int ID, String name, String type, double costPrice, String company, int minimumOrder) {
+	
+	public Product() {
+		
+		this.productID = 0;
+		this.minimumOrder = 0;
+		this.costPrice = 0;
+		this.productName = "";
+		this.productType = "";
+		this.company = "";
+	}
+	
+	public Product(int ID, int minimumOrder, double costPrice, String name, String type, String comp, ArrayList<String> allergens) {
 		
 		this.productID = ID;
+		this.minimumOrder = minimumOrder;
+		this.costPrice = costPrice;
 		this.productName = name;
 		this.productType = type;
-		this.costPrice = costPrice;
-		this.company = company;	
-		this.minimumOrder = minimumOrder;
+		this.company = comp;	
+		this.allergens = allergens;
 	}
 	
 	public int getProductID() {
@@ -25,12 +39,20 @@ public class Product {
 		this.productID = ID;
 	}
 	
-	public String getProductName() {
-		return productName;
+	public int getMinimumOrder()	{
+		return minimumOrder;
 	}
 	
-	public void setProductName(String name) {
-		this.productName = name;
+	public void setMinimumOrder(int minimumOrder)	{
+		this.minimumOrder = minimumOrder;
+	}
+	
+	public double getCostPrice()	{
+		return costPrice;
+	}
+	
+	public void setCostPrice(double costPrice)	{
+		this.costPrice = costPrice;
 	}
 	
 	public String getType() {
@@ -41,10 +63,6 @@ public class Product {
 		this.productType = type;
 	}
 	
-	public double getPrice() {
-		return costPrice;
-	}
-	
 	public String getCompany() {
 		return company;
 	}
@@ -53,11 +71,20 @@ public class Product {
 		this.company = company;
 	}
 	
-	public int getMinOrder() {
-		return minimumOrder;
+	public String getProductName()	{
+		return productName;
 	}
-
-	public void setMinOrder(int minimumOrder) {
-		this.minimumOrder = minimumOrder;
+	
+	public void setProductName(String productName)	{
+		this.productName = productName;
 	}
+	
+	public ArrayList<String> getAllergens()	{
+		return allergens;
+	}
+	
+	public void setAllergens(ArrayList<String> allergens)	{
+		this.allergens = allergens;
+	}
+	
 }

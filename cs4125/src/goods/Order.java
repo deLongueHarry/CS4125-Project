@@ -1,19 +1,17 @@
 package goods;
 
 import java.util.ArrayList;
-
 import employee.Employee;
 
-public class Order {
+public class Order
+{
 	private int orderID;
 	private ArrayList<OrderItem> order;
 	private String dateOrdered;
 	private Employee emp;
 	private boolean paid;
 	
-	public Order( ) {
-		
-	}
+	public Order()	{}
 	
 	public Order(int orderID, String dateOrdered, Employee emp, boolean paid) 
 	{
@@ -71,5 +69,5 @@ public class Order {
 	public void setOrder(ArrayList<OrderItem> order)
 	{
 		this.order = order;
-}
+	}
 }

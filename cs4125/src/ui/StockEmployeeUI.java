@@ -1,11 +1,9 @@
 package ui;
 
 import java.util.Scanner;
-
-import cs4125.Store;
-import employee.Manager;
-import goods.Product;
-import goods.StockItem;
+import java.util.ArrayList;
+import goods.*;
+import other.Store;
 
 public class StockEmployeeUI implements UI {
 
@@ -14,8 +12,7 @@ public class StockEmployeeUI implements UI {
 	public void startInterface() {
 		
 		String error2 = "Invalid selection. Please enter 1 to order new stock, 2 to add/remove stock, 3 to view stock, or 0 to quit the program: ";
-		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n %3s\n\nEnter selection: ", "1. Create new stock order",
-							"2. Add/remove stock to the system", "3. View current stock levels", "0. Quit program");
+		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n %3s\n\nEnter selection: ", "1. Create new stock order", "2. Add/remove stock to the system", "3. View current stock levels", "0. Quit program");
 		
 		boolean validSelection = false;
 		while(!validSelection) {
@@ -51,64 +48,88 @@ public class StockEmployeeUI implements UI {
 	}
 	
 	// Test method
-	public static void OrderStock() {
+	private void OrderStock() {
+		System.out.println(Store.products.size());
+		System.out.println(other.Store.products.size()-1);
 		
-		boolean approved;
-		if (LoginUI.emp instanceof Manager) {
-			approved = true;
-		}
-		else {
-			approved = false;
-		}
-		// 
-		//do stuff here
-		//
 	}
 	
 	// Gives user options to register, add or remove stock from the system
 	// Author: Michael
 	private void UpdateStock() {
 		
-		String error1 = "Invalid selection. Please enter 1 register stock, 2 to remove stock, or 0 to quit the program: ";
+		String error1 = "Invalid selection. Please enter 1 register stock, 2 to add stock, 3 to remove stock, or 0 to quit the program: ";
 		String error2 = "Invalid input, please try again!";
 		String answer = "";
 		
 		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n %3s\n\nEnter selection: ",
-							"1. Register new stock", "2. Remove stock", "0. Quit program");
+							"1. Register new stock", "2. Add to existing stock", "3. Remove stock", "0. Quit program");
 
 		boolean validSelection = false;
 		while(!validSelection) {
 						
 			try {
 				int input = Integer.parseInt(in.nextLine());
+				viewStock();
 				
 				// Register new product and add as stock item
-				if (input == 1) {
+				if (input == 1 || input == 2) {
+
+					if (input == 1) {
+						System.out.print("\n************************************\n\nDoes product exist? (Enter Y/y/N/n): ");
+						answer = in.nextLine();
+					}
 					
-					viewProducts();
-					System.out.print("\nEnter the ID of the product you wish to register: ");
-					try {
+					// Add existing product as a new stock item
+					if (input == 2 || answer.equalsIgnoreCase("Y")) {
 						
-						int inputID = Integer.parseInt(in.nextLine());
-						for (int i = 0; i < Store.stockItems.size(); i++) {
+						// If product already exists all relevant data will be passed 
+						// 	to addNewStock based on a matching product ID given by the user 
+						System.out.print("\nEnter the ID of the product you wish to restock: ");
+						try {
 							
-							if (inputID == Store.products.get(i).getProductID()) {
-								addNewStock(Store.products.get(i));
+							int inputID = Integer.parseInt(in.nextLine());
+							for (int i = 0; i < Store.stockItems.size(); i++) {
+								
+								if (inputID == Store.products.get(i).getProductID()) {
+									addNewStock(Store.products.get(i).getProductName(), 
+											Store.products.get(i).getType(), Store.products.get(i).getCompany());
+								}
 							}
+							
+							validSelection = true;
+							startInterface();
 						}
+						catch (NumberFormatException ID) {
+							System.out.println(error2);								
+						}
+					}
+					else if (answer.equalsIgnoreCase("N")) {
+							
+						System.out.print("\n\n******* Enter new product **********\n\nProduct name: ");
+						String prodName = in.nextLine();
 						
+						System.out.print("Classification: ");
+						String prodType = in.nextLine();
+						
+						System.out.print("Manufacturer: ");
+						String prodManufac = in.nextLine();
+						
+						addNewStock(prodName, prodType, prodManufac);								
+							
 						validSelection = true;
 						startInterface();
+						
 					}
-					catch (NumberFormatException ID) {
-						System.out.println(error2);								
+					else {
+						System.out.print("\nIncorrect selection (Enter Y/y/N/n): ");
 					}
 				}
+				
 				// Remove stock item
-				else if (input == 2) {
+				else if (input == 3) {
 					
-					viewStock();
-					System.out.print("\nEnter the ID of the stock product you wish to remove: ");
+					System.out.print("\nEnter the ID of the product you wish to remove: ");
 					try {
 						
 						int inputID = Integer.parseInt(in.nextLine());
@@ -144,11 +165,12 @@ public class StockEmployeeUI implements UI {
 	
 	// Add new stock to the system
 	// Author: Michael
-	private void addNewStock(Product prod) {
+	private void addNewStock(String prodName, String prodType, String prodManufac) {
 		
-		String error, input, useBy;
-		int stockID, stockQty = 0;
+		String error, strP, strQ, useBy;
+		int prodID, stockQty = 0;
 		int failedAttempts = 0;
+		double stockPrice = 0;
 		
 		System.out.print("Item useby date: ");
 		useBy = in.nextLine();
@@ -167,10 +189,10 @@ public class StockEmployeeUI implements UI {
 				}
 			}
 			System.out.print("Item Quantity: ");
-			input = in.nextLine();
+			strQ = in.nextLine();
 			
 			try {
-				stockQty = Integer.parseInt(input);
+				stockQty = Integer.parseInt(strQ);
 				qtyDone = true;
 			}
 			catch (NumberFormatException q) {
@@ -179,18 +201,83 @@ public class StockEmployeeUI implements UI {
 			}
 		}
 		
-		// checks if the stockItems ArrayList has at least 1 existing product item
-		if (Store.stockItems.isEmpty()) {
-			stockID = 1;
+		boolean priceDone = false;
+		while (!priceDone) {
+			if (failedAttempts >= 3) {			
+				
+				System.out.print("Would you like to quit? (Enter Y/y/N/n) ");
+				failedAttempts = 0;
+				
+				if (in.nextLine().equalsIgnoreCase("Y")) {
+					break;
+				}
+			}		
+			System.out.print("Item Price: ");
+			strP = in.nextLine();
+			
+			try {
+				stockPrice = Double.parseDouble(strP);							
+				priceDone = true;
+			}
+			catch (NumberFormatException p) {
+				System.out.print(error);
+				failedAttempts++;
+			}
+		}
+		
+		// checks if the products ArrayList has at least 1 existing product item
+		if (Store.products.isEmpty()) {
+			prodID = 1;
 		}
 		else {
 			// assigns the entered product an ID number based on the last product ID in the list
-			StockItem lastStock = Store.stockItems.get(Store.stockItems.size()-1);
-			stockID = (lastStock.getItmID()) + 1;
+			Product lastProd = Store.products.get(Store.products.size()-1);
+			prodID = (lastProd.getProductID()) + 1;
 		}
-				
-		Store.stockItems.add(new StockItem(stockID, prod, stockQty, useBy));
 		
+		// allows employee to add allergen information
+		ArrayList<String> allergens = new ArrayList<>();;
+		System.out.println("Does this product have allergen warnings? Y/N");
+		String choice = in.nextLine().toLowerCase();
+		 switch (choice)	{
+			 case "n":
+			 break;
+			 
+			 case "y":
+			 boolean done = false;
+			 
+			 while(!done)	{
+				 System.out.println("Please enter an allergen associated with this product, or 0 if you are finished inputting allergens.");
+				 String input = in.nextLine().toLowerCase();
+				 if (!(input.equals("done)")))	{
+					 System.out.println("Are you sure that " + input + " is an allergy in " + prodName + "? Please enter Y/N");
+					 String yn = in.nextLine().toLowerCase();
+					 if (yn == "y")	{
+						allergens.add(input);
+					 }
+				 }
+				 else
+					 done = true;
+			 }
+			 
+			 break;
+			 
+			 default:
+			 System.out.println("Please give your input in the form of Y or N");
+		 }
+		
+		// creates new product item
+		Product currentProd = new Product(prodID, 1, 30.0, prodName, prodType, prodManufac, allergens);
+		
+		// adds it both to the arraylist of products and stock items
+		Store.products.add(currentProd);
+		Store.stockItems.add(new StockItem(1, currentProd, stockQty, stockPrice, useBy));
+		
+		/* test loop to see if product was added to arraylist
+		for  (int i = 0; i < Store.products.size(); i++) {
+			System.out.println(Store.products.get(i).getProductID() + ": " 
+									+ Store.products.get(i).getProductName());
+		}	*/
 	}
 	
 	// Prints the current stock information on the console
@@ -205,24 +292,10 @@ public class StockEmployeeUI implements UI {
 				
 		for (int i = 0; i < Store.stockItems.size(); i++) {
 			System.out.printf("%-10d %-25s %-10s %10s%.2f %10d %15s\n", Store.stockItems.get(i).getProduct().getProductID(),
-								Store.stockItems.get(i).getProduct().getProductName(), Store.stockItems.get(i).getProduct().getType(),
-									euro, Store.stockItems.get(i).getPrice(), Store.stockItems.get(i).getQty(), Store.stockItems.get(i).getUseBy());
+					Store.stockItems.get(i).getProduct().getProductName(), Store.stockItems.get(i).getProduct().getType(),
+						euro, Store.stockItems.get(i).getPrice(), Store.stockItems.get(i).getQty(), Store.stockItems.get(i).getUseBy());
 		}
 		System.out.printf("\n%s%s%s\n\n", stars, "***************", stars);
-	}	
-	
-	private void viewProducts() {
-		
-		String stars = "**********************************";
-		
-		System.out.printf("\n%s%s%s\n\n", stars, " Available Products ", stars);
-		System.out.printf("%-10s %-25s %-10s %14s\n\n", "ID", "Name", "Type", "Company");
-				
-		for (int i = 0; i < Store.stockItems.size(); i++) {
-			System.out.printf("%-10d %-25s %-10s %14s\n", Store.stockItems.get(i).getProduct().getProductID(),
-								Store.stockItems.get(i).getProduct().getProductName(), Store.stockItems.get(i).getProduct().getType(),
-									Store.stockItems.get(i).getProduct().getCompany());
-		}
-		System.out.printf("\n%s%s%s\n\n", stars, "***************", stars);
-	}	
+	}		
+
 }

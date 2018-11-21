@@ -67,10 +67,10 @@ public class LoginUI implements UI {
 	// Author: Michael
 	private boolean checkValidLogin(int inputID, String inputPass) {
 
-		for (int i = 0; i < cs4125.Store.employees.size(); i++) {
-			if (inputID == cs4125.Store.employees.get(i).getID()) {
+		for (int i = 0; i < other.Store.employees.size(); i++) {
+			if (inputID == other.Store.employees.get(i).getID()) {
 				
-				if (inputPass.equals(cs4125.Store.employees.get(i).getPassword())) {
+				if (inputPass.equals(other.Store.employees.get(i).getPassword())) {
 					return true;
 				}
 			}	
@@ -86,9 +86,9 @@ public class LoginUI implements UI {
 	// Author: Michael
 	public Employee getCurrentEmployee(int inputID) {
 		
-		for (int i = 0; i < cs4125.Store.employees.size(); i++) {
-			if (inputID == cs4125.Store.employees.get(i).getID()) {
-				return cs4125.Store.employees.get(i);
+		for (int i = 0; i < other.Store.employees.size(); i++) {
+			if (inputID == other.Store.employees.get(i).getID()) {
+				return other.Store.employees.get(i);
 			}
 		}
 		return null;

@@ -12,13 +12,11 @@ public class StockEmployee implements Employee {
 		
 	}
 	
-	public StockEmployee(int ID, String name, String password, String address, String phoneNo) {
+	public StockEmployee(int ID, String name, String password) {
 		
 		setID(ID);
 		setName(name);
 		setPassword(password);
-		setAddress(address);
-		setPhoneNo(phoneNo);
 	}
 	
 	public int getID() {

@@ -7,16 +7,19 @@ public class OrderItem
 	private int qty;
 	private double price;
 	
-	public OrderItem(int orderItmID, Product prod, int qty)
+	public OrderItem(int orderItmID, Product prod, int qty, double price)
 	{
-		this.orderItmID = orderItmID;
 		this.prod = prod;
-		this.qty = qty * prod.getMinOrder();
-		this.price = prod.getPrice();
+		this.qty = qty;
+		this.price = price;
 	}
 	
-	public int getItmID() {
+	public int getOrderItmID()	{
 		return orderItmID;
+	}
+	
+	public void setOrderItmID(int orderItmID)	{
+		this.orderItmID = orderItmID;
 	}
 	
 	public Product getProduct() {
@@ -27,15 +30,15 @@ public class OrderItem
 		this.prod = prod;
 	}
 	
-	public int getQty() {
+	public int getqty() {
 		return qty;
 	}
 	
-	public void setQty(int qty) {
+	public void setqty(int qty) {
 		this.qty = qty;
 	}
 	
 	public double getPrice() {
-		return prod.getPrice();
+		return price;
 	}
 }	
