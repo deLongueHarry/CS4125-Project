@@ -4,22 +4,17 @@ import java.util.ArrayList;
 import transactions.Voucher;
 
 public class Customer {
-	private int custID;
-	private int custPoints;
-	private ArrayList<Integer> creditCards;
+	private int custID, custPoints;
+	private String custName, creditCard;
 	private ArrayList<String> allergens;
 	private ArrayList<Voucher> vouchers;
 	
-	public Customer(int custID)	{
+	public Customer(int custID, String custName, int custPoints, ArrayList<String> allergens, String creditCard, ArrayList<Voucher> vouchers)	{
 		this.custID = custID;
-		this.custPoints = 0;
-	}
-	
-	public Customer(int custID, int custPoints, ArrayList<Integer> creditCards, ArrayList<String> allergens, ArrayList<Voucher> vouchers)	{
-		this.custID = custID;
+		this.custName = custName;
 		this.custPoints = custPoints;
-		this.creditCards = creditCards;
 		this.allergens = allergens;
+		this.creditCard = creditCard;
 		this.vouchers = vouchers;
 	}
 	
@@ -36,7 +31,7 @@ public class Customer {
 	}
 	
 	public int getCustPoints()	{
-		return(custPoints);
+		return custPoints;
 	}
 	
 	public ArrayList<String> getAllergens()	{
@@ -55,13 +50,21 @@ public class Customer {
 		this.vouchers = vouchers;
 	}
 	
-	public ArrayList<Integer> getCreditCards()
+	public String getCreditCard()
 	{
-		return creditCards;
+		return creditCard;
 	}
 	
-	public void setCreditCards(ArrayList<Integer> creditCards)
+	public void setCreditCard(String creditCard)
 	{
-		this.creditCards = creditCards;
+		this.creditCard = creditCard;
+	}
+
+	public String getName() {
+		return custName;
+	}
+
+	public void setName(String custName) {
+		this.custName = custName;
 	}
 }

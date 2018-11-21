@@ -9,25 +9,14 @@ public class Product {
 	String productName, productType, company;
 	ArrayList<String> allergens;
 	
-	
-	public Product() {
-		
-		this.productID = 0;
-		this.minimumOrder = 0;
-		this.costPrice = 0;
-		this.productName = "";
-		this.productType = "";
-		this.company = "";
-	}
-	
-	public Product(int ID, int minimumOrder, double costPrice, String name, String type, String comp, ArrayList<String> allergens) {
+	public Product(int ID, String name, String type, double costPrice, String comp, int minimumOrder, ArrayList<String> allergens) {
 		
 		this.productID = ID;
-		this.minimumOrder = minimumOrder;
-		this.costPrice = costPrice;
 		this.productName = name;
 		this.productType = type;
-		this.company = comp;	
+		this.costPrice = costPrice;
+		this.company = comp;
+		this.minimumOrder = minimumOrder;
 		this.allergens = allergens;
 	}
 	

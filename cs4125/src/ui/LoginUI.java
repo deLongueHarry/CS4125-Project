@@ -1,7 +1,12 @@
 package ui;
 
 import employee.*;
-import java.util.*;
+import goods.Order;
+import goods.OrderItem;
+import goods.Product;
+import cs4125.Store;
+
+import java.util.Scanner;
 
 public class LoginUI implements UI {
 
@@ -55,6 +60,7 @@ public class LoginUI implements UI {
 					currentUI = new StockEmployeeUI();
 				}
 				
+				
 				currentUI.startInterface();
 				in.close();
 			}
@@ -67,10 +73,10 @@ public class LoginUI implements UI {
 	// Author: Michael
 	private boolean checkValidLogin(int inputID, String inputPass) {
 
-		for (int i = 0; i < other.Store.employees.size(); i++) {
-			if (inputID == other.Store.employees.get(i).getID()) {
+		for (int i = 0; i < Store.employees.size(); i++) {
+			if (inputID == Store.employees.get(i).getID()) {
 				
-				if (inputPass.equals(other.Store.employees.get(i).getPassword())) {
+				if (inputPass.equals(Store.employees.get(i).getPassword())) {
 					return true;
 				}
 			}	
@@ -86,11 +92,30 @@ public class LoginUI implements UI {
 	// Author: Michael
 	public Employee getCurrentEmployee(int inputID) {
 		
-		for (int i = 0; i < other.Store.employees.size(); i++) {
-			if (inputID == other.Store.employees.get(i).getID()) {
-				return other.Store.employees.get(i);
+		for (int i = 0; i < Store.employees.size(); i++) {
+			if (inputID == Store.employees.get(i).getID()) {
+				return Store.employees.get(i);
 			}
 		}
 		return null;
+	}
+	
+	public void checkStockLevels() {
+		
+		Order autoOrder = new Order();
+		
+		int threshold = 12;
+		
+		for (int i = 0; i < Store.stockItems.size(); i++) {
+			
+			Product currentProd = Store.stockItems.get(i).getProduct();
+			if (Store.stockItems.get(i).getQty() < threshold) {
+				
+				OrderItem currentItem = new OrderItem((i+1), currentProd, 4, true);
+				Store.orderItems.add(currentItem);
+			}
+		}
+		autoOrder.setOrder(Store.orderItems);
+		Store.orders.add(autoOrder);
 	}
 }

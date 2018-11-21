@@ -2,9 +2,10 @@ package ui;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import cs4125.Store;
 import goods.*;
 import transactions.*;
-import other.*;
 import customer.Customer;
 import employee.*;
 
@@ -105,7 +106,7 @@ public class TransactionsUI	implements UI{
 				System.out.println("Please give your input in the form of a number");
 			}
 		}
-		Customer current = new Customer(custID);
+		Customer current;
 		for (int p = 0; p < Store.customers.size(); p++)	{
 			if (custID == Store.customers.get(p).getCustID())	{
 				current = Store.customers.get(p);
@@ -132,14 +133,14 @@ public class TransactionsUI	implements UI{
 				if (inputArr[i].equals(products.get(j).getProductName()))	{
 					for (int k = 0; k < stockItems.size(); k++) {
 						if (stockItems.get(k).getProduct() == products.get(j))	{
-							items.add(new StockItem(items.get(items.size()-1).getStockItmID(), products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getPrice(), stockItems.get(k).getUseBy()));
+							items.add(new StockItem(items.get(items.size()-1).getItmID(), products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getPrice(), stockItems.get(k).getUseBy()));
 						}
 					}
 				}
 			}
 		}
 		//Getting customer card numbers from their profie or adding a new one 
-		ArrayList<Integer> creditCards = current.getCreditCards();
+		ArrayList<Integer> creditCards = current.getCreditCard();
 		check = false;
 		int cardChoice = -123456789;
 		while (!check)	{
@@ -171,7 +172,7 @@ public class TransactionsUI	implements UI{
 					{
 						cardNumb = Integer.parseInt(in.nextLine());
 						creditCards.add(cardNumb);
-						current.setCreditCards(creditCards);
+						current.setCreditCard(creditCards);
 						check = true;
 					}
 					catch(Exception e)

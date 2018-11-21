@@ -1,6 +1,6 @@
 package goods;
 
-public class StockItem
+public class StockItem 
 {
 	private int stockItmID;
 	private Product prod;
@@ -8,21 +8,21 @@ public class StockItem
 	private double price;
 	private String useBy;
 	
-	public StockItem(int stockItmID, Product prod, int qty, double price, String useBy)
+	double markup = 1.15;
+	
+	public StockItem(int stockItmID, Product prod, int qty, String useBy)
 	{
 		this.stockItmID = stockItmID;
 		this.prod = prod;
 		this.qty = qty;
-		this.price = price;
 		this.useBy = useBy;
-	}
-
-	public int getStockItmID()	{
-		return stockItmID;
+		
+		price = prod.getCostPrice() * markup;
+		price -= (price % 1) + 0.01;
 	}
 	
-	public void setStockItmID(int stockItmID)	{
-		this.stockItmID = stockItmID;
+	public int getItmID() {
+		return stockItmID;
 	}
 	
 	public Product getProduct() {
@@ -45,15 +45,11 @@ public class StockItem
 		return price;
 	}
 	
-	public void setPrice(double price)	{
+	public void setPrice(double price) {
 		this.price = price;
 	}
 	
 	public String getUseBy() {
 		return useBy;
 	}
-
-	public void setUseBy(String useBy)	{
-		this.useBy = useBy;
-	}
-}
+}	

@@ -6,20 +6,19 @@ public class OrderItem
 	private Product prod;
 	private int qty;
 	private double price;
+	private boolean approved;
 	
-	public OrderItem(int orderItmID, Product prod, int qty, double price)
+	public OrderItem(int orderItmID, Product prod, int qty)
 	{
-		this.prod = prod;
-		this.qty = qty;
-		this.price = price;
-	}
-	
-	public int getOrderItmID()	{
-		return orderItmID;
-	}
-	
-	public void setOrderItmID(int orderItmID)	{
 		this.orderItmID = orderItmID;
+		this.prod = prod;
+		this.qty = qty * prod.getMinimumOrder();
+		this.price = prod.getCostPrice();
+		approved = false;
+	}
+	
+	public int getItmID() {
+		return orderItmID;
 	}
 	
 	public Product getProduct() {
@@ -30,15 +29,19 @@ public class OrderItem
 		this.prod = prod;
 	}
 	
-	public int getqty() {
+	public int getQty() {
 		return qty;
 	}
 	
-	public void setqty(int qty) {
+	public void setQty(int qty) {
 		this.qty = qty;
 	}
 	
 	public double getPrice() {
-		return price;
+		return prod.getCostPrice();
+	}
+	
+	public void setApproved() {
+		approved = true;
 	}
 }	
