@@ -10,7 +10,7 @@ import employee.*;
 
 public class TransactionsUI	implements UI{
 	
-	public Manager emp;
+	public Manager emp = new Manager();
 	
 	private Scanner in = new Scanner(System.in);
 	
@@ -57,8 +57,8 @@ public class TransactionsUI	implements UI{
 		
 		else	{
 			Transactions newSale = createSale(findTransactionID(), Store.products, Store.stockItems);
-			Store.sales.add(newSale);
 			Store.ac.updateAmount(newSale.getAmount(), true);
+			Store.sales.add(newSale);
 		}
 		
 	}
@@ -85,30 +85,31 @@ public class TransactionsUI	implements UI{
 	//Creates a new Sale
 	//Author: Alex
 	public Transactions createSale(int transID, ArrayList<Product> products, ArrayList<StockItem> stockItems)	{
-		//Sales newSale;
 		double amount = 0;
 		String cardNumb = "";
 		int custID = 0;
 		boolean check = false;
 		ArrayList<StockItem> items = new ArrayList<StockItem>();
 		//Getting customer details
+		Customer current = new Customer();
 		while (!check)
 		{
 			System.out.println("Please enter customerID number");
 			try
 			{
 				custID = Integer.parseInt(in.nextLine());
-				check = true;
+				current = new Customer(custID);
+				for (int p = 0; p < Store.customers.size(); p++)	{
+					if (custID == Store.customers.get(p).getCustID())	{
+						current = Store.customers.get(p);
+						check = true;					
+					}
+				}
 			}
-			catch (Exception e)
+			catch (Exception e){}
+			if (!check)
 			{
-				System.out.println("Please give your input in the form of a number");
-			}
-		}
-		Customer current = new Customer(custID);
-		for (int p = 0; p < Store.customers.size(); p++)	{
-			if (custID == Store.customers.get(p).getCustID())	{
-				current = Store.customers.get(p);
+				System.out.println("Your input is not valid, please try again.");
 			}
 		}
 		
@@ -129,10 +130,18 @@ public class TransactionsUI	implements UI{
 		String[] inputArr = input.split(",");
 		for (int i = 0; i < inputArr.length; i+=2) {
 			for (int j = 0; j < products.size(); j++)	{
-				if (inputArr[i].equals(products.get(j).getProductName()))	{
+				if (inputArr[i].equals(products.get(j).getProductName().toLowerCase()))	{
 					for (int k = 0; k < stockItems.size(); k++) {
 						if (stockItems.get(k).getProduct() == products.get(j))	{
-							items.add(new StockItem(items.get(items.size()-1).getItmID(), products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getUseBy()));
+							//int stockItmID, Product prod, int qty, String useBy
+							if (items.size() > 0)
+							{
+								items.add(new StockItem(items.get(items.size()).getItmID() + 1, products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getUseBy()));
+							}
+							else
+							{
+								items.add(new StockItem(1, products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getUseBy()));
+							}
 						}
 					}
 				}
@@ -143,19 +152,17 @@ public class TransactionsUI	implements UI{
 		if (current.getCreditCard() != "")	{
 			cardNumb = current.getCreditCard();
 		}
-		else	{
-					System.out.println("Please enter your credit card number now:");
-					cardNumb = in.nextLine();
-		}
 		
+		
+		//Checking if customer would like to use one of their vouchers
 		int voucherChoice = 0;
 		double discount = 0;
-		if (!(current.getVouchers().size() == 0))	{
+		if (current.getVouchers().size() > 0)	{
 			check = false;
 			while (!check)	{
 				System.out.println("Please input the ID number of the voucher you would like to use, or 0 to skip this step.");
 				for (int h = 0; h < current.getVouchers().size(); h++)	{
-					System.out.println("ID:\t" + current.getVouchers().get(h).getAmount());
+					System.out.println("ID:\t" + current.getVouchers().get(h).getVoucherNo());
 					System.out.println("Amount:\t" + current.getVouchers().get(h).getAmount() + "\n");
 				}
 				try	{
@@ -166,7 +173,6 @@ public class TransactionsUI	implements UI{
 				}
 				if (voucherChoice == 0)
 				{
-					System.out.println("Step skipped.");
 					check = true;
 				}
 				else
@@ -185,13 +191,13 @@ public class TransactionsUI	implements UI{
 		//Gets the total price for the sale
 		for (int m = 1; m < inputArr.length; m+=2)	{
 			for (int n = 0; n < items.size(); n++)		{
-				amount += Integer.parseInt(inputArr[m]) * items.get(n).getPrice() - discount;
+				amount += Double.parseDouble(inputArr[m]) * items.get(n).getPrice() - discount;
 			}
 		}
 
 		//Creates & returns a new Sales object
 		TransactionsFactory fact = new TransactionsFactory();
-		Transactions newSale = fact.getTransactions("sale", transID, amount, items, custID, cardNumb);
+		Transactions newSale = fact.getTransactions("sales", transID, amount, items, custID, cardNumb);
 		return(newSale);
 	}
 	
@@ -220,7 +226,7 @@ public class TransactionsUI	implements UI{
 		//Returns the new Return
 		else	{
 			TransactionsFactory fact = new TransactionsFactory();
-			Transactions newReturn = fact.getTransactions("return", transID, amount, items, custID, cardNumb);
+			Transactions newReturn = fact.getTransactions("returns", transID, amount, items, custID, cardNumb);
 			return newReturn;
 		}
 	}
@@ -248,12 +254,11 @@ public class TransactionsUI	implements UI{
 				for (int i = 0; i < products.size(); i++)	{
 					if (choice.matches(products.get(i).getProductName().toLowerCase()))	{
 						valid = true;
-						if (current.getAllergens().size() > 0)	{
-							for (int j = 0; j < current.getAllergens().size(); j++)	{
-								for (int k = 0; k < products.get(i).getAllergens().size(); k++)	{
-									if (current.getAllergens().get(j) == products.get(i).getAllergens().get(k))	{
-										allergens.add(current.getAllergens().get(j).toString());
-									}
+
+						for (int j = 0; j < current.getAllergens().size(); j++)	{
+							for (int k = 0; k < products.get(i).getAllergens().size(); k++)	{
+								if (current.getAllergens().get(j) == products.get(i).getAllergens().get(k))	{
+									allergens.add(current.getAllergens().get(j).toString());
 								}
 							}
 						}
@@ -262,15 +267,20 @@ public class TransactionsUI	implements UI{
 				break;
 		}
 		//Adds new entry to return
+		String yesNo = "y";
 		if (!(out.equals("done")) && valid)	{
-			System.out.println("Are you sure you wish to purchase " + choice + "? It contains these items from your list of allergens:");
-			for (int q = 0; q < allergens.size(); q++)	{
-				System.out.println(allergens.get(q));
+			if (allergens.size() > 0)
+			{
+				System.out.println("Are you sure you wish to purchase " + choice + "? It contains these items from your list of allergens:");
+				for (int q = 0; q < allergens.size(); q++)	{
+					System.out.println(allergens.get(q));
+				}
+				System.out.println("Please enter y/n");
+				yesNo = in.nextLine().toLowerCase();
 			}
-			System.out.println("Please enter y/n");
-			String yesNo = in.nextLine().toLowerCase();
+			
 			if (yesNo.equals("y"))	{
-				out += "," + choice + ",";
+				out += choice + ",";
 				try	{
 					System.out.println("Please enter amount of this item in your transaction.");
 					out += in.nextLine();
@@ -291,6 +301,9 @@ public class TransactionsUI	implements UI{
 	}
 
 	//Lets user view a transaction
+	//Author: Alex
+	
+	//Lets employee view details of a transaction
 	//Author: Alex
 	public String viewTransaction(ArrayList<Transactions> sale, ArrayList<Transactions> returnsList, ArrayList<Product> products)	{
 		System.out.println("Please input the TransactionID of the transaction you wish to view.");
