@@ -41,9 +41,7 @@ public class DataPersistence {
 		i = 0;
 		for (; i < customers.size(); i++)	{
 			eachLine += Integer.toString(customers.get(i).getCustID()) + ",";
-			for (; j < customers.get(i).getCreditCards().size(); j++)	{
-				eachLine += Integer.toString(customers.get(i).getCreditCards().get(j)) + ",";
-			}
+			eachLine += customers.get(i).getCreditCard() + ",";
 			j = 0;
 			for (; j < customers.get(i).getAllergens().size(); j++)	{
 				eachLine += customers.get(i).getAllergens().get(j) + ",";
@@ -60,7 +58,6 @@ public class DataPersistence {
 		custWriter.close();
 	}
 	
-	//Writing products to file
 	//Writing products to file
 	public void productsToFile(ArrayList <Product> products) throws IOException	{
 		eachLine = "";
@@ -85,7 +82,6 @@ public class DataPersistence {
 	}
 	
 	//Writing orders to file
-	//Writing orders to file
 	public void ordersToFile(ArrayList <Order> orders) 	throws IOException	{
 		eachLine = "";
 		File ord = new File("orders.txt");
@@ -94,7 +90,7 @@ public class DataPersistence {
 			eachLine += Integer.toString(orders.get(i).getOrderID()) + ",";
 			
 			for (; j < orders.get(i).getOrder().size(); j++)	{
-				eachLine += Integer.toString(orders.get(i).getOrder().get(j).getOrderItmID()) + ",";
+				eachLine += Integer.toString(orders.get(i).getOrder().get(j).getItmID()) + ",";
 			}
 			j = 0;
 			eachLine += orders.get(i).getDateOrdered() + ",";
@@ -110,14 +106,13 @@ public class DataPersistence {
 	}
 	
 	//Writing stock items to file
-	//Writing stock items to file
 	public void stockItemsToFile(ArrayList <StockItem> stockItems) throws IOException	{
 		eachLine = "";
 		File stock = new File("stockitems.txt");
 		i = 0;
 		
 		for (; i < stockItems.size(); i++)	{
-			eachLine += Integer.toString(stockItems.get(i).getStockItmID()) + ",";
+			eachLine += Integer.toString(stockItems.get(i).getItmID()) + ",";
 			eachLine += Integer.toString(stockItems.get(i).getProduct().getProductID()) + ",";
 			eachLine += Integer.toString(stockItems.get(i).getQty()) + ",";
 			eachLine += Double.toString(stockItems.get(i).getPrice()) + ",";
@@ -128,7 +123,6 @@ public class DataPersistence {
 		stockWriter.close();
 	}
 	
-	//Writing order items to file
 	//Writing order items to file;
 	public void orderItemsToFile(ArrayList <OrderItem> orderItems) throws IOException	{
 		eachLine = "";
@@ -136,9 +130,9 @@ public class DataPersistence {
 		i = 0;
 		
 		for (; i < orderItems.size(); i++)	{
-			eachLine += Integer.toString(orderItems.get(i).getOrderItmID()) + ",";
+			eachLine += Integer.toString(orderItems.get(i).getItmID()) + ",";
 			eachLine += Integer.toString(orderItems.get(i).getProduct().getProductID()) + ",";
-			eachLine += Integer.toString(orderItems.get(i).getqty()) + ",";
+			eachLine += Integer.toString(orderItems.get(i).getQty()) + ",";
 			eachLine += Double.toString(orderItems.get(i).getPrice()) + ",";
 		}
 		BufferedWriter ordItWriter = new BufferedWriter(new FileWriter(orderItem));
@@ -156,10 +150,10 @@ public class DataPersistence {
 			eachLine += Integer.toString(sales.get(i).getTransID()) + ",";
 			eachLine += Double.toString(sales.get(i).getAmount()) + ",";
 			for (; j < sales.get(i).getItems().size(); j++)	{
-				eachLine += Integer.toString(sales.get(i).getItems().get(j).getStockItmID()) + ",";
+				eachLine += Integer.toString(sales.get(i).getItems().get(j).getItmID()) + ",";
 			}
 			eachLine += Integer.toString(sales.get(i).getCustID()) + ",";
-			eachLine += Integer.toString(sales.get(i).getCardNumb()) + ",";
+			eachLine += sales.get(i).getCardNumb() + ",";
 		}
 		BufferedWriter saleWriter = new BufferedWriter(new FileWriter(sale));
 		saleWriter.write(eachLine);
@@ -176,10 +170,10 @@ public class DataPersistence {
 			eachLine += Integer.toString(returnsList.get(i).getTransID()) + ",";
 			eachLine += Double.toString(returnsList.get(i).getAmount()) + ",";
 			for (; j < returnsList.get(i).getItems().size(); j++)	{
-				eachLine += Integer.toString(returnsList.get(i).getItems().get(j).getStockItmID()) + ",";
+				eachLine += Integer.toString(returnsList.get(i).getItems().get(j).getItmID()) + ",";
 			}
 			eachLine += Integer.toString(returnsList.get(i).getCustID()) + ",";
-			eachLine += Integer.toString(returnsList.get(i).getCardNumb()) + ",";
+			eachLine += returnsList.get(i).getCardNumb() + ",";
 		}
 		BufferedWriter returnsWriter = new BufferedWriter(new FileWriter(returns));
 		returnsWriter.write(eachLine);
