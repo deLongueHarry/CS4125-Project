@@ -8,17 +8,13 @@ public class StockItem
 	private double price;
 	private String useBy;
 	
-	double markup = 1.15;
-	
 	public StockItem(int stockItmID, Product prod, int qty, String useBy)
 	{
 		this.stockItmID = stockItmID;
 		this.prod = prod;
 		this.qty = qty;
 		this.useBy = useBy;
-		
-		price = prod.getCostPrice() * markup;
-		price -= (price % 1) + 0.01;
+		price = prod.getCostPrice() * 2;
 	}
 	
 	public int getItmID() {

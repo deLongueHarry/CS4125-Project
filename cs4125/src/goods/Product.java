@@ -4,18 +4,19 @@ import java.util.ArrayList;
 
 public class Product {
 
-	int productID, minimumOrder;
-	double costPrice;
+	int productID;
 	String productName, productType, company;
+	double costPrice;
+	int minimumOrder;
 	ArrayList<String> allergens;
 	
-	public Product(int ID, String name, String type, double costPrice, String comp, int minimumOrder, ArrayList<String> allergens) {
+	public Product(int ID, String name, String type, String comp, double costPrice, int minimumOrder, ArrayList<String> allergens) {
 		
 		this.productID = ID;
 		this.productName = name;
 		this.productType = type;
-		this.costPrice = costPrice;
 		this.company = comp;
+		this.costPrice = costPrice;
 		this.minimumOrder = minimumOrder;
 		this.allergens = allergens;
 	}

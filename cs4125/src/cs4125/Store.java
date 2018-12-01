@@ -38,13 +38,14 @@ public class Store {
 		UI store = new StoreUI();
 		store.startInterface();
 		
-		//writeToFiles();
+		writeToFiles();
 	}
 	
 	public static void loadFromArrayLists() throws FileNotFoundException, IOException {
 		
 		File empFile = new File("employees.txt");
 		Scanner empScanner = new Scanner(empFile);		
+
 		while(empScanner.hasNext()) {
 			
 			String[] empStr = empScanner.nextLine().split(",");
@@ -73,6 +74,7 @@ public class Store {
 		File custFile = new File("customers.txt");
 		Scanner custScanner = new Scanner(custFile);
 		ArrayList<String> listOfAllergens = new ArrayList<>();
+		ArrayList<Voucher> vouchers = new ArrayList<>();
 
 		while(custScanner.hasNext()) {
 			
@@ -84,24 +86,20 @@ public class Store {
 				listOfAllergens.add(tempAll[i]);
 			}
 			if(custStr.length > 5)
-			{
-				ArrayList<Voucher> vouchers = new ArrayList<>();
-				String[] tempVouchers = custStr[5].split("/");
+			{	
 				Voucher tempVouch;
-				for (int i = 0; i < tempVouchers.length; i+= 2)
+				String[] splitVouch = custStr[5].split("/");
+
+				for (int i = 0; i < splitVouch.length; i++)
 				{
-					tempVouch = new Voucher(Integer.parseInt(tempVouchers[i]), Double.parseDouble(tempVouchers[i+1]));
+					String[] voucherID_Val = splitVouch[i].split(":");
+					tempVouch = new Voucher(Integer.parseInt(voucherID_Val[0]), Double.parseDouble(voucherID_Val[1]));
 					vouchers.add(tempVouch);
-				}
-				Customer tempCust = new Customer(Integer.parseInt(custStr[0]), custStr[1], Integer.parseInt(custStr[2]), listOfAllergens, custStr[4], vouchers);
-				customers.add(tempCust);
+				}				
 			}
-			else
-			{
-				ArrayList<Voucher> empty = new ArrayList<>();
-				Customer tempCust = new Customer(Integer.parseInt(custStr[0]), custStr[1], Integer.parseInt(custStr[2]), listOfAllergens, custStr[4], empty);
-				customers.add(tempCust);
-			}
+			
+			Customer tempCust = new Customer(Integer.parseInt(custStr[0]), custStr[1], Integer.parseInt(custStr[2]), listOfAllergens, custStr[4], vouchers);
+			customers.add(tempCust);
 		}
 		custScanner.close();
 		
@@ -114,8 +112,7 @@ public class Store {
 		while(prodScanner.hasNext()) {
 			
 			String[] prodStr = prodScanner.nextLine().split(",");
-			String tempAl = prodStr[6].trim();
-			String[] allergens = tempAl.split("/");
+			String[] allergens = prodStr[prodStr.length - 1].split("/");
 			
 			for (int i = 0; i < allergens.length; i++) {
 					allergenList.add(allergens[i]);
@@ -123,7 +120,7 @@ public class Store {
 			
 			
 			Product tempProd = new Product(Integer.parseInt(prodStr[0]), prodStr[1], prodStr[2], 
-											Double.parseDouble(prodStr[3]), prodStr[4], 
+											prodStr[3], Double.parseDouble(prodStr[4]), 
 												Integer.parseInt(prodStr[5]), allergenList);
 			
 			products.add(tempProd);
@@ -185,7 +182,7 @@ public class Store {
 				}
 			}
 			
-			if (orderStr[4].toLowerCase() == "true")	{
+			if (orderStr[4].equalsIgnoreCase("true"))	{
 				paid = true;
 			}
 			else	{

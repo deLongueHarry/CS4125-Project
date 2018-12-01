@@ -6,16 +6,19 @@ import employee.Employee;
 public class Order
 {
 	private int orderID;
-	private ArrayList<OrderItem> order;
+	private ArrayList<OrderItem> orderItems;
 	private String dateOrdered;
 	private Employee emp;
 	private boolean paid;
 	
-	public Order()	{}
+	public Order()	{
+		
+	}
 	
-	public Order(int orderID, String dateOrdered, Employee emp, boolean paid) 
+	public Order(int orderID, ArrayList<OrderItem> orderItems, String dateOrdered, Employee emp, boolean paid) 
 	{
 		this.orderID = orderID;
+		this.orderItems = orderItems;
 		this.dateOrdered = dateOrdered;
 		this.emp = emp;
 		this.paid = paid;
@@ -63,11 +66,11 @@ public class Order
 	
 	public ArrayList<OrderItem> getOrder()
 	{
-		return order;
+		return orderItems;
 	}
 	
 	public void setOrder(ArrayList<OrderItem> order)
 	{
-		this.order = order;
+		this.orderItems = orderItems;
 	}
 }

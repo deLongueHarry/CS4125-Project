@@ -22,6 +22,9 @@ public class Customer {
 		this.vouchers = vouchers;
 	}
 	
+	public Customer() {
+	}
+
 	public void addPoints(int points)	{
 		this.custPoints += points;
 	}

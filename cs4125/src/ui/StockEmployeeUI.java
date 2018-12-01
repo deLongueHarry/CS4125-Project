@@ -35,7 +35,7 @@ public class StockEmployeeUI implements UI {
 				else if (input == 3) {
 					
 					viewStock();
-					System.out.print("Enter a new selection: ");
+					startInterface();
 				}
 				else if (input == 0) {
 					break;
@@ -72,7 +72,7 @@ public class StockEmployeeUI implements UI {
 		String error1 = "Invalid selection. Please enter 1 register stock, 2 to remove stock, or 0 to quit the program: ";
 		String error2 = "Invalid input, please try again!";
 		
-		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n %3s\n\nEnter selection: ",
+		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n\nEnter selection: ",
 							"1. Register new stock", "2. Remove stock", "0. Quit program");
 
 		boolean validSelection = false;
@@ -183,11 +183,11 @@ public class StockEmployeeUI implements UI {
 			stockID = 1;
 		}
 		else {
+			
 			// assigns the entered product an ID number based on the last product ID in the list
 			StockItem lastStock = Store.stockItems.get(Store.stockItems.size()-1);
 			stockID = (lastStock.getItmID()) + 1;
 		}
-				
 		Store.stockItems.add(new StockItem(stockID, prod, stockQty, useBy));
 		
 	}
@@ -205,7 +205,7 @@ public class StockEmployeeUI implements UI {
 		for (int i = 0; i < Store.stockItems.size(); i++) {
 			Product temp = Store.stockItems.get(i).getProduct();
 			
-			System.out.printf("%-10d %-25s %-10s %10s%.2f %10d %15s\n", temp.getProductID(), temp.getProductName(), temp.getType(), euro,
+			System.out.printf("%-10d %-25s %-10s %10s%.2f %10d %15s\n", Store.stockItems.get(i).getItmID(), temp.getProductName(), temp.getType(), euro,
 								Store.stockItems.get(i).getPrice(), Store.stockItems.get(i).getQty(), Store.stockItems.get(i).getUseBy());
 		}
 		System.out.printf("\n%s%s%s\n\n", stars, "***************", stars);
