@@ -89,7 +89,7 @@ public class ManagerUI implements UI {
 					System.out.print("\nCredit card no: ");
 					String creditCard = in.nextLine();
 					
-					Customer temp = new Customer(custID, custName, 0, allergens, creditCard, null);
+					Customer temp = new Customer(custID, 0, custName, creditCard, allergens, null);
 				}
 				// Remove customer from database
 				else if (input == 2) {

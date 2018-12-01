@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 import employee.*;
@@ -38,11 +39,15 @@ public class Store {
 		UI store = new StoreUI();
 		store.startInterface();
 		
-		writeToFiles();
+		//writeToFiles();
 	}
 	
 	public static void loadFromArrayLists() throws FileNotFoundException, IOException {
 		
+		
+		/*
+		 * 	Loads csv file of employees into the system
+		 */
 		File empFile = new File("employees.txt");
 		Scanner empScanner = new Scanner(empFile);		
 
@@ -71,6 +76,10 @@ public class Store {
 		}
 		empScanner.close();
 				
+		
+		/*
+		 * 	Loads csv file of customers into the system
+		 */
 		File custFile = new File("customers.txt");
 		Scanner custScanner = new Scanner(custFile);
 		ArrayList<String> listOfAllergens = new ArrayList<>();
@@ -79,7 +88,7 @@ public class Store {
 		while(custScanner.hasNext()) {
 			
 			String[] custStr = custScanner.nextLine().split(",");
-			String[] tempAll = custStr[3].split("/");
+			String[] tempAll = custStr[4].split("/");
 			
 			for (int i = 0; i < tempAll.length; i++)
 			{
@@ -92,19 +101,22 @@ public class Store {
 
 				for (int i = 0; i < splitVouch.length; i++)
 				{
-					String[] voucherID_Val = splitVouch[i].split(":");
-					tempVouch = new Voucher(Integer.parseInt(voucherID_Val[0]), Double.parseDouble(voucherID_Val[1]));
+					String[] voucherInfo = splitVouch[i].split(":");
+					tempVouch = new Voucher(Integer.parseInt(voucherInfo[0]), Double.parseDouble(voucherInfo[1]));
 					vouchers.add(tempVouch);
 				}				
 			}
 			
-			Customer tempCust = new Customer(Integer.parseInt(custStr[0]), custStr[1], Integer.parseInt(custStr[2]), listOfAllergens, custStr[4], vouchers);
+			Customer tempCust = new Customer(Integer.parseInt(custStr[0]), Integer.parseInt(custStr[1]), 
+												custStr[2], custStr[3], listOfAllergens, vouchers);
 			customers.add(tempCust);
 		}
 		custScanner.close();
 		
 		
-		
+		/*
+		 * 	Loads csv file of products into the system
+		 */
 		File prodFile = new File("products.txt");
 		Scanner prodScanner = new Scanner(prodFile);	
 		
@@ -112,7 +124,7 @@ public class Store {
 		while(prodScanner.hasNext()) {
 			
 			String[] prodStr = prodScanner.nextLine().split(",");
-			String[] allergens = prodStr[prodStr.length - 1].split("/");
+			String[] allergens = prodStr[5].split("/");
 			
 			for (int i = 0; i < allergens.length; i++) {
 					allergenList.add(allergens[i]);
@@ -123,10 +135,15 @@ public class Store {
 											prodStr[3], Double.parseDouble(prodStr[4]), 
 												Integer.parseInt(prodStr[5]), allergenList);
 			
+			allergenList.clear();
 			products.add(tempProd);
 		}
 		prodScanner.close();
 		
+		
+		/*
+		 * 	Loads csv file of stock items into the system
+		 */
 		Product temp = null;	
 		File stockItmFile = new File("stockItems.txt");
 		Scanner stockItmScanner = new Scanner(stockItmFile);		
@@ -141,11 +158,16 @@ public class Store {
 				}
 			}
 			//int stockItmID, Product prod, int qty, String useBy
-			StockItem tempStockItm = new StockItem(Integer.parseInt(stockItmStr[0]), temp, Integer.parseInt(stockItmStr[2]), stockItmStr[3]);
+			StockItem tempStockItm = new StockItem(Integer.parseInt(stockItmStr[0]), temp, 
+													Integer.parseInt(stockItmStr[2]), stockItmStr[4]);
 			stockItems.add(tempStockItm);
 		}
 		stockItmScanner.close();	
 		
+		
+		/*
+		 * 	Loads csv file of order items into the system
+		 */
 		File orderItmFile = new File("orderItems.txt");
 		Scanner orderItmScanner = new Scanner(orderItmFile);
 		while(orderItmScanner.hasNext()) {
@@ -163,6 +185,10 @@ public class Store {
 		}
 		orderItmScanner.close();
 		
+		
+		/*
+		 * 	Loads csv file of orders into the system
+		 */
 		File orderFile = new File("orders.txt");
 		Scanner orderScanner = new Scanner(orderFile);
 		
@@ -170,27 +196,34 @@ public class Store {
 			String[] orderStr = orderScanner.nextLine().split(",");
 			
 
-			boolean paid;
+			boolean approved, paid;
 			ArrayList<OrderItem> items = new ArrayList<>();
 			
-			String[] orderItemsInfo = orderStr[1].split("/");
-			for (int i = 0; i < orderItemsInfo.length; i++)	{
-				for (int j = 0; j < orders.size(); j++)	{
-					if (Integer.parseInt(orderItemsInfo[i]) == orderItems.get(j).getItmID())	{
-						items.add(orderItems.get(j));
+			if (orderStr[1] != null) {
+				String[] orderItemIds = orderStr[1].split("/");
+				for (int i = 0; i < orderItemIds.length; i++)	{
+
+					int idToCompare = Integer.parseInt(orderItemIds[i]);
+					for (int j = 0; j < orderItems.size(); j++)	{
+						
+						if (idToCompare == orderItems.get(j).getItmID())	{
+							items.add(orderItems.get(j));
+						}
 					}
 				}
 			}
+
+			approved = (orderStr[4].equalsIgnoreCase("true")) ? true : false;	
+			paid = (orderStr[5].equalsIgnoreCase("true")) ? true : false;		
 			
-			if (orderStr[4].equalsIgnoreCase("true"))	{
-				paid = true;
-			}
-			else	{
-				paid = false;
-			}
+			System.out.print(approved + " ");
+			System.out.println(paid);
+				
 			for (int i = 0; i < employees.size(); i++)	{
 				if (Integer.parseInt(orderStr[3]) == employees.get(i).getID())	{
-					Order tempOrd = new Order(Integer.parseInt(orderStr[0]), items, orderStr[2], employees.get(i), paid);
+					
+					Order tempOrd = new Order(Integer.parseInt(orderStr[0]), items, orderStr[2], employees.get(i), approved, paid);
+					tempOrd.setDateOrdered(orderStr[6]);
 					orders.add(tempOrd);
 				}
 			}
@@ -211,6 +244,8 @@ public class Store {
 				orderItems.add(currentItem);
 			}
 		}
+		// System generated orders are approved automatically
+		todaysOrder.Approve();
 		orders.add(todaysOrder);
 	}
 	

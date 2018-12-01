@@ -9,18 +9,20 @@ public class Order
 	private ArrayList<OrderItem> orderItems;
 	private String dateOrdered;
 	private Employee emp;
+	private boolean approved;
 	private boolean paid;
 	
 	public Order()	{
 		
 	}
 	
-	public Order(int orderID, ArrayList<OrderItem> orderItems, String dateOrdered, Employee emp, boolean paid) 
+	public Order(int orderID, ArrayList<OrderItem> orderItems, String dateOrdered, Employee emp, boolean approved, boolean paid) 
 	{
 		this.orderID = orderID;
 		this.orderItems = orderItems;
 		this.dateOrdered = dateOrdered;
 		this.emp = emp;
+		this.approved = approved;
 		this.paid = paid;
 	}
 	
@@ -54,7 +56,7 @@ public class Order
 		this.emp = emp;
 	}
 	
-	public boolean getPaid()
+	public boolean isPaid()
 	{
 		return paid;
 	}
@@ -64,12 +66,22 @@ public class Order
 		this.paid = paid;
 	}
 	
-	public ArrayList<OrderItem> getOrder()
+	public boolean isApproved()
+	{
+		return approved;
+	}
+	
+	public void Approve()
+	{
+		this.approved = true;
+	}	
+	
+	public ArrayList<OrderItem> getOrderItems()
 	{
 		return orderItems;
 	}
 	
-	public void setOrder(ArrayList<OrderItem> order)
+	public void setOrderItems(ArrayList<OrderItem> order)
 	{
 		this.orderItems = orderItems;
 	}

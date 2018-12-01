@@ -13,8 +13,8 @@ public class StockItem
 		this.stockItmID = stockItmID;
 		this.prod = prod;
 		this.qty = qty;
-		this.useBy = useBy;
 		price = prod.getCostPrice() * 2;
+		this.useBy = useBy;
 	}
 	
 	public int getItmID() {

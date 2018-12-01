@@ -112,11 +112,11 @@ public class LoginUI implements UI {
 			if (Store.stockItems.get(i).getQty() < threshold) {
 				
 				OrderItem currentItem = new OrderItem((i+1), currentProd, 4);
-				currentItem.setApproved();
 				Store.orderItems.add(currentItem);
 			}
 		}
-		autoOrder.setOrder(Store.orderItems);
+		autoOrder.setOrderItems(Store.orderItems);
 		Store.orders.add(autoOrder);
+		Store.orderItems.clear();
 	}
 }

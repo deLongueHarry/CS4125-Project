@@ -13,7 +13,7 @@ public class StockEmployeeUI implements UI {
 	
 	public void startInterface() {
 		
-		String error2 = "Invalid selection. Please enter 1 to order new stock, 2 to add/remove stock, 3 to view stock, or 0 to quit the program: ";
+		String error = "Invalid selection. Please enter 1 to order new stock, 2 to add/remove stock, 3 to view stock, or 0 to quit the program: ";
 		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n %3s\n\nEnter selection: ", "1. Create new stock order",
 							"2. Add/remove stock to the system", "3. View current stock levels", "0. Quit program");
 		
@@ -41,11 +41,11 @@ public class StockEmployeeUI implements UI {
 					break;
 				}
 				else {
-					System.out.print(error2);
+					System.out.print(error);
 				}
 			} 
 			catch (NumberFormatException e) {
-				System.out.print(error2);
+				System.out.print(error);
 			}
 		}
 	}
@@ -61,7 +61,8 @@ public class StockEmployeeUI implements UI {
 			approved = false;
 		}
 		// 
-		//do stuff here
+		if (approved)
+			System.out.println("Ordering...");
 		//
 	}
 	
@@ -70,7 +71,7 @@ public class StockEmployeeUI implements UI {
 	private void UpdateStock() {
 		
 		String error1 = "Invalid selection. Please enter 1 register stock, 2 to remove stock, or 0 to quit the program: ";
-		String error2 = "Invalid input, please try again!";
+		String error2 = "Invalid input, please try again! Enter product ID: ";
 		
 		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n\nEnter selection: ",
 							"1. Register new stock", "2. Remove stock", "0. Quit program");
@@ -97,7 +98,7 @@ public class StockEmployeeUI implements UI {
 						}
 						
 						validSelection = true;
-						startInterface();
+						UpdateStock();
 					}
 					catch (NumberFormatException ID) {
 						System.out.println(error2);								
@@ -116,6 +117,8 @@ public class StockEmployeeUI implements UI {
 							if (inputID == Store.products.get(i).getProductID()) {
 								Store.stockItems.remove(i);
 							}
+							else
+								System.out.println(error2);
 						}
 						
 						validSelection = true;
@@ -196,7 +199,7 @@ public class StockEmployeeUI implements UI {
 	// Author: Michael
 	private void viewStock() {
 		
-		String euro = "\u20ac";
+		String euroSymbol = "\u20ac";
 		String stars = "*************************************";
 		
 		System.out.printf("\n%s%s%s\n\n", stars, " Current Stock ", stars);
@@ -205,7 +208,7 @@ public class StockEmployeeUI implements UI {
 		for (int i = 0; i < Store.stockItems.size(); i++) {
 			Product temp = Store.stockItems.get(i).getProduct();
 			
-			System.out.printf("%-10d %-25s %-10s %10s%.2f %10d %15s\n", Store.stockItems.get(i).getItmID(), temp.getProductName(), temp.getType(), euro,
+			System.out.printf("%-10d %-25s %-10s %10s%.2f %10d %15s\n", Store.stockItems.get(i).getItmID(), temp.getProductName(), temp.getType(), euroSymbol,
 								Store.stockItems.get(i).getPrice(), Store.stockItems.get(i).getQty(), Store.stockItems.get(i).getUseBy());
 		}
 		System.out.printf("\n%s%s%s\n\n", stars, "***************", stars);

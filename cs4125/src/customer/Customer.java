@@ -13,12 +13,12 @@ public class Customer {
 		this.custID = custID;
 	}
 	
-	public Customer(int custID, String custName, int custPoints, ArrayList<String> allergens, String creditCard, ArrayList<Voucher> vouchers)	{
+	public Customer(int custID, int custPoints, String custName, String creditCard, ArrayList<String> allergens, ArrayList<Voucher> vouchers)	{
 		this.custID = custID;
-		this.custName = custName;
 		this.custPoints = custPoints;
-		this.allergens = allergens;
+		this.custName = custName;
 		this.creditCard = creditCard;
+		this.allergens = allergens;
 		this.vouchers = vouchers;
 	}
 	
