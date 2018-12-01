@@ -54,17 +54,20 @@ public class DataPersistence {
 		eachLine = "";
 		
 		for (i = 0; i < customers.size(); i++) {
+
+			Customer temp = customers.get(i);	
+			ArrayList allergenList = (ArrayList) temp.getAllergens().clone();
 			
-			Customer temp = customers.get(i);		
 			eachLine += Integer.toString(temp.getCustID()) + "," + temp.getCustPoints() 
 						+ "," + temp.getName() + "," + temp.getCreditCard() + ",";
 			
-			if (!temp.getAllergens().isEmpty()) {
-				listSize = temp.getAllergens().size();
+			if (allergenList != null) {
+				listSize = allergenList.size();
 				
-				for (j = 0; j < listSize - 1; j++)	{
-					eachLine += temp.getAllergens().get(j);
-					if (j != listSize - 2)
+				
+				for (j = 0; j < listSize; j++)	{
+					eachLine += allergenList.get(j);
+					if (j != listSize - 1)
 						eachLine += "/";
 				}
 			}
@@ -72,7 +75,11 @@ public class DataPersistence {
 			
 			for (j = 0; j < temp.getVouchers().size(); j++)	{
 				eachLine += Integer.toString(temp.getVouchers().get(j).getVoucherNo()) + ":"
-							+ Double.toString(temp.getVouchers().get(j).getAmount()) + ",";	
+							+ Double.toString(temp.getVouchers().get(j).getAmount());
+				if (j != temp.getVouchers().size() - 1)
+					eachLine += "/";
+				else
+					eachLine += ",";
 			}
 			
 			if (i != customers.size() - 1)
@@ -92,20 +99,24 @@ public class DataPersistence {
 
 		for (i = 0; i < products.size(); i++)	{
 			
-			Product temp = products.get(i);
-			eachLine += Integer.toString(temp.getProductID()) + ","
-						+ temp.getProductName() + "," + temp.getType() + "," + temp.getCompany() + "," 
-							+  Double.toString(temp.getCostPrice()) + "," + Integer.toString(temp.getMinimumOrder()) + ",";
+			Product temp = products.get(i);		
+			ArrayList allergenList = (ArrayList) temp.getAllergens().clone();
+
+			eachLine += Integer.toString(temp.getProductID()) + ","	+ temp.getProductName() + "," + temp.getType() + "," 
+							+ temp.getCompany() + "," +  Double.toString(temp.getCostPrice()) + "," 
+								+ Integer.toString(temp.getMinimumOrder()) + ",";
 			
-			if (!temp.getAllergens().isEmpty()) {
-				listSize = temp.getAllergens().size();
+			if (allergenList != null) {
+				listSize = allergenList.size();
 				
-				for (j = 0; j < listSize - 1; j++) {
-					eachLine += temp.getAllergens().get(j);
-					if (j != listSize - 2)
+				
+				for (j = 0; j < listSize; j++)	{
+					eachLine += allergenList.get(j);
+					if (j != listSize - 1)
 						eachLine += "/";
 				}
 			}
+
 			eachLine += ",";
 			
 			if (i != products.size() - 1)
@@ -128,22 +139,24 @@ public class DataPersistence {
 			Order temp = orders.get(i);
 			eachLine += Integer.toString(temp.getOrderID()) + ",";
 			
-			if (!temp.getOrderItems().isEmpty())	{
+			if (temp.getOrderItems() != null)	{
 				listSize = temp.getOrderItems().size();
 				
-				for (j = 0; j < listSize - 1; j++)	{
+				for (j = 0; j < listSize; j++)	{
 					eachLine += Integer.toString(temp.getOrderItems().get(j).getItmID());
-					if (j != listSize - 2)
+					if (j != listSize - 1)
 						eachLine += "/";
-				}				
-			}
-			
-			eachLine += "," + temp.getDateOrdered() + "," + temp.getEmp().getID() + ","
+				}	
+				
+				eachLine += "," + temp.getDateOrdered() + "," + temp.getEmp().getID() + ","
 						+ (temp.isApproved() ? "true," : "false,")
 							+ (temp.isPaid() ? "true," : "false,")
 								+ temp.getDateOrdered() + ",";
+			}
+			
+			
 
-			if (i != orders.size() - 1)
+			if (i != orders.size() - 2)
 				eachLine += "\n";
 		}
 		BufferedWriter ordWriter = new BufferedWriter(new FileWriter(ord));
@@ -181,7 +194,7 @@ public class DataPersistence {
 		orderItem.createNewFile();
 		eachLine = "";
 		
-		for (i = 0; i < orderItems.size() - 1; i++)	{
+		for (i = 0; i < orderItems.size(); i++)	{
 			
 			OrderItem temp = orderItems.get(i);
 			eachLine += Integer.toString(temp.getItmID()) + ","
@@ -214,7 +227,7 @@ public class DataPersistence {
 			
 			for (j = 0; j < listSize; j++)	{
 				eachLine += Integer.toString(temp.getItems().get(j).getItmID());
-				if (j != listSize - 2)
+				if (j != listSize - 1)
 					eachLine += "/";
 			}
 			eachLine += Integer.toString(temp.getCustID()) + "," + temp.getCardNumb() + ",";

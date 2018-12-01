@@ -15,6 +15,7 @@ import account.Account;
 import transactions.*;
 import dataPersistence.*;
 
+
 public class Store {
 	
 	public static ArrayList<Employee> employees = new ArrayList<Employee>();
@@ -39,15 +40,15 @@ public class Store {
 		UI store = new StoreUI();
 		store.startInterface();
 		
-		//writeToFiles();
+		writeToFiles();
 	}
 	
+	// Author: Michael 
 	public static void loadFromArrayLists() throws FileNotFoundException, IOException {
 		
-		
-		/*
-		 * 	Loads csv file of employees into the system
-		 */
+		Product temp = null;	
+	
+		// Loads employees into the system from csv file
 		File empFile = new File("employees.txt");
 		Scanner empScanner = new Scanner(empFile);		
 
@@ -77,23 +78,30 @@ public class Store {
 		empScanner.close();
 				
 		
-		/*
-		 * 	Loads csv file of customers into the system
-		 */
+		// Loads customers into the system from csv file
 		File custFile = new File("customers.txt");
-		Scanner custScanner = new Scanner(custFile);
-		ArrayList<String> listOfAllergens = new ArrayList<>();
-		ArrayList<Voucher> vouchers = new ArrayList<>();
+		Scanner custScanner = new Scanner(custFile);		
 
 		while(custScanner.hasNext()) {
 			
+			ArrayList<String> allergenList = new ArrayList<String>();
+			ArrayList<Voucher> vouchers = new ArrayList<>();
 			String[] custStr = custScanner.nextLine().split(",");
-			String[] tempAll = custStr[4].split("/");
 			
-			for (int i = 0; i < tempAll.length; i++)
-			{
-				listOfAllergens.add(tempAll[i]);
+			try {
+				if (custStr[4].equals("")) {
+					allergenList = null;
+				}
+				else {
+					String[] allergens = custStr[4].split("/");
+					for (int i = 0; i < allergens.length; i++) {
+						allergenList.add(allergens[i]);
+					}			
+				}						
+			} 
+			catch (ArrayIndexOutOfBoundsException a) {
 			}
+			
 			if(custStr.length > 5)
 			{	
 				Voucher tempVouch;
@@ -108,43 +116,46 @@ public class Store {
 			}
 			
 			Customer tempCust = new Customer(Integer.parseInt(custStr[0]), Integer.parseInt(custStr[1]), 
-												custStr[2], custStr[3], listOfAllergens, vouchers);
+												custStr[2], custStr[3], allergenList, vouchers);
 			customers.add(tempCust);
+			
 		}
 		custScanner.close();
 		
-		
-		/*
-		 * 	Loads csv file of products into the system
-		 */
+		// Loads products into the system from csv file
 		File prodFile = new File("products.txt");
 		Scanner prodScanner = new Scanner(prodFile);	
 		
-		ArrayList<String> allergenList = new ArrayList<String>();
+		
 		while(prodScanner.hasNext()) {
 			
-			String[] prodStr = prodScanner.nextLine().split(",");
-			String[] allergens = prodStr[5].split("/");
-			
-			for (int i = 0; i < allergens.length; i++) {
-					allergenList.add(allergens[i]);
+			ArrayList<String> allergenList = new ArrayList<String>();
+			String[] prodStr = prodScanner.nextLine().split(",");	
+			try {
+				
+				if (prodStr[6].equals("")) {
+					allergenList = null;
+				}
+				else {
+					String[] allergens = prodStr[6].split("/");
+					for (int i = 0; i < allergens.length; i++) {
+						allergenList.add(allergens[i]);
+					}			
+				}						
+			} 
+			catch (ArrayIndexOutOfBoundsException a) {
 			}
-			
 			
 			Product tempProd = new Product(Integer.parseInt(prodStr[0]), prodStr[1], prodStr[2], 
 											prodStr[3], Double.parseDouble(prodStr[4]), 
 												Integer.parseInt(prodStr[5]), allergenList);
 			
-			allergenList.clear();
 			products.add(tempProd);
 		}
 		prodScanner.close();
 		
 		
-		/*
-		 * 	Loads csv file of stock items into the system
-		 */
-		Product temp = null;	
+		// Loads stockItems into the system from csv file
 		File stockItmFile = new File("stockItems.txt");
 		Scanner stockItmScanner = new Scanner(stockItmFile);		
 		while(stockItmScanner.hasNext()) {
@@ -165,9 +176,7 @@ public class Store {
 		stockItmScanner.close();	
 		
 		
-		/*
-		 * 	Loads csv file of order items into the system
-		 */
+		// Loads orderItems into the system from csv file
 		File orderItmFile = new File("orderItems.txt");
 		Scanner orderItmScanner = new Scanner(orderItmFile);
 		while(orderItmScanner.hasNext()) {
@@ -186,9 +195,7 @@ public class Store {
 		orderItmScanner.close();
 		
 		
-		/*
-		 * 	Loads csv file of orders into the system
-		 */
+		// Loads orders into the system from csv file
 		File orderFile = new File("orders.txt");
 		Scanner orderScanner = new Scanner(orderFile);
 		
@@ -215,9 +222,6 @@ public class Store {
 
 			approved = (orderStr[4].equalsIgnoreCase("true")) ? true : false;	
 			paid = (orderStr[5].equalsIgnoreCase("true")) ? true : false;		
-			
-			System.out.print(approved + " ");
-			System.out.println(paid);
 				
 			for (int i = 0; i < employees.size(); i++)	{
 				if (Integer.parseInt(orderStr[3]) == employees.get(i).getID())	{
@@ -231,6 +235,8 @@ public class Store {
 		orderScanner.close();
 	}
 	
+	// Checks if stock levels are below a certain threshold, and generates orders if so
+	// Author: Michael
 	public static void checkStockLevels() {
 		
 		Order todaysOrder = new Order();
@@ -263,6 +269,7 @@ public class Store {
 		d.salesToFile(sales);
 		d.returnsToFile(returnsList);
 		d.accountToFile(ac);
+		
 	}
 
 }

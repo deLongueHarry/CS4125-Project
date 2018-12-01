@@ -76,5 +76,4 @@ public class Product {
 	public void setAllergens(ArrayList<String> allergens)	{
 		this.allergens = allergens;
 	}
-	
 }
