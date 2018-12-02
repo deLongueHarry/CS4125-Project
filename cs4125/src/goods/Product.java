@@ -1,6 +1,6 @@
 package goods;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Product {
 
@@ -8,9 +8,9 @@ public class Product {
 	String productName, productType, company;
 	double costPrice;
 	int minimumOrder;
-	ArrayList<String> allergens;
+	List<String> allergens;
 	
-	public Product(int ID, String name, String type, String comp, double costPrice, int minimumOrder, ArrayList<String> allergens) {
+	public Product(int ID, String name, String type, String comp, double costPrice, int minimumOrder, List<String> allergens) {
 		
 		this.productID = ID;
 		this.productName = name;
@@ -69,11 +69,11 @@ public class Product {
 		this.productName = productName;
 	}
 	
-	public ArrayList<String> getAllergens()	{
+	public List<String> getAllergens()	{
 		return allergens;
 	}
 	
-	public void setAllergens(ArrayList<String> allergens)	{
+	public void setAllergens(List<String> allergens)	{
 		this.allergens = allergens;
 	}
 	

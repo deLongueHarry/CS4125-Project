@@ -3,7 +3,6 @@ package ui;
 import java.util.Scanner;
 
 import cs4125.Store;
-import employee.Manager;
 import goods.Product;
 import goods.StockItem;
 
@@ -13,7 +12,7 @@ public class StockEmployeeUI implements UI {
 	
 	public void startInterface() {
 		
-		String error = "Invalid selection. Please enter 1 to order new stock, 2 to add/remove stock, 3 to view stock, or 0 to quit the program: ";
+		String error2 = "Invalid selection. Please enter 1 to order new stock, 2 to add/remove stock, 3 to view stock, or 0 to quit the program: ";
 		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n %3s\n\nEnter selection: ", "1. Create new stock order",
 							"2. Add/remove stock to the system", "3. View current stock levels", "0. Quit program");
 		
@@ -35,17 +34,17 @@ public class StockEmployeeUI implements UI {
 				else if (input == 3) {
 					
 					viewStock();
-					startInterface();
+					System.out.print("Enter a new selection: ");
 				}
 				else if (input == 0) {
 					break;
 				}
 				else {
-					System.out.print(error);
+					System.out.print(error2);
 				}
 			} 
 			catch (NumberFormatException e) {
-				System.out.print(error);
+				System.out.print(error2);
 			}
 		}
 	}
@@ -54,15 +53,17 @@ public class StockEmployeeUI implements UI {
 	public static void OrderStock() {
 		
 		boolean approved;
-		if (LoginUI.emp instanceof Manager) {
+		if (LoginUI.emp.getType().equals("manager")) {
 			approved = true;
 		}
 		else {
 			approved = false;
 		}
+		if (approved)	{
+			//stuff things stuff
+		}
 		// 
-		if (approved)
-			System.out.println("Ordering...");
+		//do stuff here
 		//
 	}
 	
@@ -71,9 +72,9 @@ public class StockEmployeeUI implements UI {
 	private void UpdateStock() {
 		
 		String error1 = "Invalid selection. Please enter 1 register stock, 2 to remove stock, or 0 to quit the program: ";
-		String error2 = "Invalid input, please try again! Enter product ID: ";
+		String error2 = "Invalid input, please try again!";
 		
-		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n\nEnter selection: ",
+		System.out.printf("\n\nSelect an option from the following:\n %3s\n %3s\n %3s\n %3s\n\nEnter selection: ",
 							"1. Register new stock", "2. Remove stock", "0. Quit program");
 
 		boolean validSelection = false;
@@ -98,7 +99,7 @@ public class StockEmployeeUI implements UI {
 						}
 						
 						validSelection = true;
-						UpdateStock();
+						startInterface();
 					}
 					catch (NumberFormatException ID) {
 						System.out.println(error2);								
@@ -117,8 +118,6 @@ public class StockEmployeeUI implements UI {
 							if (inputID == Store.products.get(i).getProductID()) {
 								Store.stockItems.remove(i);
 							}
-							else
-								System.out.println(error2);
 						}
 						
 						validSelection = true;
@@ -148,8 +147,11 @@ public class StockEmployeeUI implements UI {
 	// Author: Michael
 	private void addNewStock(Product prod) {
 		
-		String error, input, useBy;
-		int stockID, stockQty = 0;
+		String error;
+		String input;
+		String useBy;
+		int stockID = 0;
+		int stockQty = 0;
 		int failedAttempts = 0;
 		
 		System.out.print("Item useby date: ");
@@ -186,11 +188,11 @@ public class StockEmployeeUI implements UI {
 			stockID = 1;
 		}
 		else {
-			
 			// assigns the entered product an ID number based on the last product ID in the list
 			StockItem lastStock = Store.stockItems.get(Store.stockItems.size()-1);
 			stockID = (lastStock.getItmID()) + 1;
 		}
+				
 		Store.stockItems.add(new StockItem(stockID, prod, stockQty, useBy));
 		
 	}
@@ -199,7 +201,7 @@ public class StockEmployeeUI implements UI {
 	// Author: Michael
 	private void viewStock() {
 		
-		String euroSymbol = "\u20ac";
+		String euro = "\u20ac";
 		String stars = "*************************************";
 		
 		System.out.printf("\n%s%s%s\n\n", stars, " Current Stock ", stars);
@@ -208,7 +210,7 @@ public class StockEmployeeUI implements UI {
 		for (int i = 0; i < Store.stockItems.size(); i++) {
 			Product temp = Store.stockItems.get(i).getProduct();
 			
-			System.out.printf("%-10d %-25s %-10s %10s%.2f %10d %15s\n", Store.stockItems.get(i).getItmID(), temp.getProductName(), temp.getType(), euroSymbol,
+			System.out.printf("%-10d %-25s %-10s %10s%.2f %10d %15s\n", temp.getProductID(), temp.getProductName(), temp.getType(), euro,
 								Store.stockItems.get(i).getPrice(), Store.stockItems.get(i).getQty(), Store.stockItems.get(i).getUseBy());
 		}
 		System.out.printf("\n%s%s%s\n\n", stars, "***************", stars);

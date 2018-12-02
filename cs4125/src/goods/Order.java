@@ -1,12 +1,12 @@
 package goods;
 
-import java.util.ArrayList;
+import java.util.List;
 import employee.Employee;
 
 public class Order
 {
 	private int orderID;
-	private ArrayList<OrderItem> orderItems;
+	private List<OrderItem> orderItems;
 	private String dateOrdered;
 	private Employee emp;
 	private boolean approved;
@@ -16,7 +16,7 @@ public class Order
 		
 	}
 	
-	public Order(int orderID, ArrayList<OrderItem> orderItems, String dateOrdered, Employee emp, boolean approved, boolean paid) 
+	public Order(int orderID, List<OrderItem> orderItems, String dateOrdered, Employee emp, boolean approved, boolean paid) 
 	{
 		this.orderID = orderID;
 		this.orderItems = orderItems;
@@ -76,13 +76,13 @@ public class Order
 		this.approved = true;
 	}	
 	
-	public ArrayList<OrderItem> getOrderItems()
+	public List<OrderItem> getOrderItems()
 	{
 		return orderItems;
 	}
 	
-	public void setOrderItems(ArrayList<OrderItem> order)
+	public void setOrderItems(List<OrderItem> order)
 	{
-		this.orderItems = orderItems;
+		this.orderItems = order;
 	}
 }

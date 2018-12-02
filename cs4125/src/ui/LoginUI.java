@@ -6,6 +6,7 @@ import goods.OrderItem;
 import goods.Product;
 import cs4125.Store;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class LoginUI implements UI {
@@ -53,13 +54,28 @@ public class LoginUI implements UI {
 				
 				System.out.printf("\n\n************* %d *************\n\nLogged in as: %s", emp.getID(), emp.getName());
 				
-				if (emp instanceof Manager) {
-					currentUI = new ManagerUI();
-				}
-				if (emp instanceof StockEmployee) {
-					currentUI = new StockEmployeeUI();
-				}
+				Criteria crit = new CriteriaManager();
+				List<Employee> managers = crit.meetCriteria(Store.employees);
+				crit = new CriteriaStockEmployee();
+				List<Employee> stockEmps = crit.meetCriteria(Store.employees);
 				
+				for (int i = 0; i < managers.size(); i++)
+				{
+					if (managers.get(i) == emp)
+					{
+						currentUI = new ManagerUI();
+					}
+					else
+					{
+						for (int j = 0; j < stockEmps.size(); j++)
+						{
+							if (stockEmps.get(j) == emp)
+							{
+								currentUI = new StockEmployeeUI();
+							}
+						}
+					}
+				}			
 				
 				currentUI.startInterface();
 				in.close();
@@ -112,11 +128,11 @@ public class LoginUI implements UI {
 			if (Store.stockItems.get(i).getQty() < threshold) {
 				
 				OrderItem currentItem = new OrderItem((i+1), currentProd, 4);
+				//currentItem.setApproved();
 				Store.orderItems.add(currentItem);
 			}
 		}
 		autoOrder.setOrderItems(Store.orderItems);
 		Store.orders.add(autoOrder);
-		Store.orderItems.clear();
 	}
 }

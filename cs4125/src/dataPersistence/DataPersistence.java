@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import employee.*;
 import goods.*;
 import transactions.*;
@@ -19,19 +20,24 @@ public class DataPersistence {
 	public DataPersistence() {}
 	
 	//Writing employees to file
-	public void employeesToFile(ArrayList <Employee> employees)	throws IOException	{
+	public void employeesToFile(List <Employee> employees)	throws IOException	{
 		
 		File emp = new File("employees.txt");
 		emp.createNewFile();
-		
+		Criteria crit = new CriteriaManager();
+		List<Employee> man = crit.meetCriteria(employees);
 		for (i = 0; i < employees.size(); i++)	{
 			
 			Employee temp = employees.get(i);
 			
-			if (temp instanceof StockEmployee) 
-				eachLine += "s";
-			else if (temp instanceof Manager) 
-				eachLine += "m";
+			for (int j = 0; j < man.size(); j++)	{
+				if (employees.get(i) == man.get(j))	{
+					eachLine += "m";
+				}
+				else	{
+					eachLine += "s";
+				}
+			}
 			
 			eachLine += Integer.toString(temp.getID()) + "," + temp.getName() + ","
 						+ temp.getPassword() + "," + temp.getAddress() + ","
@@ -47,24 +53,31 @@ public class DataPersistence {
 	}
 	
 	//Writing customers to file
-	public void customersToFile(ArrayList <Customer> customers) throws IOException	{
+	public void customersToFile(List <Customer> customers) throws IOException	{
 		
 		File cust = new File("customers.txt");
 		cust.createNewFile();
 		eachLine = "";
 		
 		for (i = 0; i < customers.size(); i++) {
+
+			Customer temp = customers.get(i);	
+			//ArrayList allergenList = (ArrayList) temp.getAllergens().clone();
+			List<String> allergenList = new ArrayList<>();
+			for (int j = 0; j < temp.getAllergens().size(); j++)	{
+				allergenList.add(temp.getAllergens().get(j));
+			}
 			
-			Customer temp = customers.get(i);		
 			eachLine += Integer.toString(temp.getCustID()) + "," + temp.getCustPoints() 
 						+ "," + temp.getName() + "," + temp.getCreditCard() + ",";
 			
-			if (!temp.getAllergens().isEmpty()) {
-				listSize = temp.getAllergens().size();
+			if (allergenList != null) {
+				listSize = allergenList.size();
 				
-				for (j = 0; j < listSize - 1; j++)	{
-					eachLine += temp.getAllergens().get(j);
-					if (j != listSize - 2)
+				
+				for (j = 0; j < listSize; j++)	{
+					eachLine += allergenList.get(j);
+					if (j != listSize - 1)
 						eachLine += "/";
 				}
 			}
@@ -72,7 +85,11 @@ public class DataPersistence {
 			
 			for (j = 0; j < temp.getVouchers().size(); j++)	{
 				eachLine += Integer.toString(temp.getVouchers().get(j).getVoucherNo()) + ":"
-							+ Double.toString(temp.getVouchers().get(j).getAmount()) + ",";	
+							+ Double.toString(temp.getVouchers().get(j).getAmount());
+				if (j != temp.getVouchers().size() - 1)
+					eachLine += "/";
+				else
+					eachLine += ",";
 			}
 			
 			if (i != customers.size() - 1)
@@ -84,7 +101,7 @@ public class DataPersistence {
 	}
 	
 	//Writing products to file
-	public void productsToFile(ArrayList <Product> products) throws IOException	{
+	public void productsToFile(List <Product> products) throws IOException	{
 		
 		File prod = new File("products.txt");
 		prod.createNewFile();
@@ -93,19 +110,27 @@ public class DataPersistence {
 		for (i = 0; i < products.size(); i++)	{
 			
 			Product temp = products.get(i);
-			eachLine += Integer.toString(temp.getProductID()) + ","
-						+ temp.getProductName() + "," + temp.getType() + "," + temp.getCompany() + "," 
-							+  Double.toString(temp.getCostPrice()) + "," + Integer.toString(temp.getMinimumOrder()) + ",";
+			//ArrayList allergenList = (ArrayList) temp.getAllergens().clone();
+			List<String> allergenList = new ArrayList<>();
+			for (int j = 0; j < temp.getAllergens().size(); j++)	{
+				allergenList.add(temp.getAllergens().get(j));
+			}
 			
-			if (!temp.getAllergens().isEmpty()) {
-				listSize = temp.getAllergens().size();
+			eachLine += Integer.toString(temp.getProductID()) + ","	+ temp.getProductName() + "," + temp.getType() + "," 
+							+ temp.getCompany() + "," +  Double.toString(temp.getCostPrice()) + "," 
+								+ Integer.toString(temp.getMinimumOrder()) + ",";
+			
+			if (allergenList != null) {
+				listSize = allergenList.size();
 				
-				for (j = 0; j < listSize - 1; j++) {
-					eachLine += temp.getAllergens().get(j);
-					if (j != listSize - 2)
+				
+				for (j = 0; j < listSize; j++)	{
+					eachLine += allergenList.get(j);
+					if (j != listSize - 1)
 						eachLine += "/";
 				}
 			}
+
 			eachLine += ",";
 			
 			if (i != products.size() - 1)
@@ -117,7 +142,7 @@ public class DataPersistence {
 	}
 	
 	//Writing orders to file
-	public void ordersToFile(ArrayList <Order> orders) 	throws IOException	{
+	public void ordersToFile(List <Order> orders) 	throws IOException	{
 		
 		File ord = new File("orders.txt");
 		ord.createNewFile();
@@ -128,22 +153,24 @@ public class DataPersistence {
 			Order temp = orders.get(i);
 			eachLine += Integer.toString(temp.getOrderID()) + ",";
 			
-			if (!temp.getOrderItems().isEmpty())	{
+			if (temp.getOrderItems() != null)	{
 				listSize = temp.getOrderItems().size();
 				
-				for (j = 0; j < listSize - 1; j++)	{
+				for (j = 0; j < listSize; j++)	{
 					eachLine += Integer.toString(temp.getOrderItems().get(j).getItmID());
-					if (j != listSize - 2)
+					if (j != listSize - 1)
 						eachLine += "/";
-				}				
-			}
-			
-			eachLine += "," + temp.getDateOrdered() + "," + temp.getEmp().getID() + ","
+				}	
+				
+				eachLine += "," + temp.getDateOrdered() + "," + temp.getEmp().getID() + ","
 						+ (temp.isApproved() ? "true," : "false,")
 							+ (temp.isPaid() ? "true," : "false,")
 								+ temp.getDateOrdered() + ",";
+			}
+			
+			
 
-			if (i != orders.size() - 1)
+			if (i != orders.size() - 2)
 				eachLine += "\n";
 		}
 		BufferedWriter ordWriter = new BufferedWriter(new FileWriter(ord));
@@ -152,7 +179,7 @@ public class DataPersistence {
 	}
 	
 	//Writing stock items to file
-	public void stockItemsToFile(ArrayList <StockItem> stockItems) throws IOException	{
+	public void stockItemsToFile(List <StockItem> stockItems) throws IOException	{
 		
 		File stock = new File("stockitems.txt");
 		stock.createNewFile();
@@ -175,13 +202,13 @@ public class DataPersistence {
 	}
 	
 	//Writing order items to file;
-	public void orderItemsToFile(ArrayList <OrderItem> orderItems) throws IOException	{
+	public void orderItemsToFile(List <OrderItem> orderItems) throws IOException	{
 		
 		File orderItem = new File("orderitems.txt");
 		orderItem.createNewFile();
 		eachLine = "";
 		
-		for (i = 0; i < orderItems.size() - 1; i++)	{
+		for (i = 0; i < orderItems.size(); i++)	{
 			
 			OrderItem temp = orderItems.get(i);
 			eachLine += Integer.toString(temp.getItmID()) + ","
@@ -198,7 +225,7 @@ public class DataPersistence {
 	}
 		
 	//Writing sales to file
-	public void salesToFile(ArrayList <Transactions> sales) throws IOException	{
+	public void salesToFile(List <Transactions> sales) throws IOException	{
 		
 		File sale = new File("sales.txt");
 		sale.createNewFile();
@@ -214,10 +241,10 @@ public class DataPersistence {
 			
 			for (j = 0; j < listSize; j++)	{
 				eachLine += Integer.toString(temp.getItems().get(j).getItmID());
-				if (j != listSize - 2)
+				if (j != listSize - 1)
 					eachLine += "/";
 			}
-			eachLine += Integer.toString(temp.getCustID()) + "," + temp.getCardNumb() + ",";
+			eachLine += "," + Integer.toString(temp.getCustID()) + "," + temp.getCardNumb() + ",";
 			
 			if (i != sales.size() - 1)
 				eachLine += "\n";
@@ -228,7 +255,7 @@ public class DataPersistence {
 	}
 	
 	//Writing Returns to file
-	public void returnsToFile(ArrayList<Transactions> returnsList) throws IOException	{
+	public void returnsToFile(List<Transactions> returnsList) throws IOException	{
 		
 		File returns = new File("returnsList.txt");
 		returns.createNewFile();

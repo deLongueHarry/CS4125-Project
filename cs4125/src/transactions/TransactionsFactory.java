@@ -1,12 +1,12 @@
 package transactions;
 
-import java.util.ArrayList;
+import java.util.List;
 import goods.StockItem;
 //Implements factory method for transactions
 //Author: Alex
 public class TransactionsFactory {
 	
-	public Transactions getTransactions(String transactionsType, int transID, double amount, ArrayList<StockItem> items, int custID, String cardNumb)	{
+	public Transactions getTransactions(String transactionsType, int transID, double amount, List<StockItem> items, int custID, String cardNumb)	{
 		transactionsType = transactionsType.toLowerCase();
 		if (transactionsType == null)	{
 			return null;

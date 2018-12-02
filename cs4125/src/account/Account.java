@@ -1,23 +1,34 @@
 package account;
-
+//Implements Singleton Design Pattern
 public class Account 
 {
-	private int amount;
+	private static Account ac = new Account(0);
+	private double amount;
 	
-	public Account(int xAm)
+	private Account(double xAm)
 	{
-		xAm = amount;
+		this.amount = xAm;
 	}
-	public int getAmount()
+
+	public static Account instanceOf()
+	{
+		return ac;
+	}
+	
+	public double getAmount()
 	{
 		return amount;
 	}
-	public int updateAmount(double aAmount, boolean sale)
+	public double updateAmount(double aAmount, boolean sale)
 	{
-		if(sale = true)
-			aAmount += amount;
+		if (sale)
+		{
+			this.amount += aAmount;
+		}
 		else
-			aAmount -= amount;
+		{
+			this.amount -= aAmount;
+		}
 		return amount;
-	}
+	}	
 }
