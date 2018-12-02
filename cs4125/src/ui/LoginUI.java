@@ -4,14 +4,14 @@ import employee.*;
 import goods.Order;
 import goods.OrderItem;
 import goods.Product;
-import cs4125.Store;
+import cs4125.StoreFacade;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class LoginUI implements UI {
-
-	public static Employee emp;		// Current employee logged in to the system
+	
+	public static Employee emp;
 	private Scanner in = new Scanner(System.in);
 	
 	public void startInterface() {
@@ -38,9 +38,7 @@ public class LoginUI implements UI {
 				System.out.print("\nLogin ID: ");
 				inputID = Integer.parseInt(in.nextLine());
 			}
-			catch (NumberFormatException e) {
-				
-			}
+			catch (NumberFormatException e) {}
 			
 			System.out.print("Password: ");
 			String inputPass = in.nextLine();	
@@ -55,9 +53,9 @@ public class LoginUI implements UI {
 				System.out.printf("\n\n************* %d *************\n\nLogged in as: %s", emp.getID(), emp.getName());
 				
 				Criteria crit = new CriteriaManager();
-				List<Employee> managers = crit.meetCriteria(Store.employees);
+				List<Employee> managers = crit.meetCriteria(StoreFacade.employees);
 				crit = new CriteriaStockEmployee();
-				List<Employee> stockEmps = crit.meetCriteria(Store.employees);
+				List<Employee> stockEmps = crit.meetCriteria(StoreFacade.employees);
 				
 				for (int i = 0; i < managers.size(); i++)
 				{
@@ -89,13 +87,10 @@ public class LoginUI implements UI {
 	// Author: Michael
 	private boolean checkValidLogin(int inputID, String inputPass) {
 
-		for (int i = 0; i < Store.employees.size(); i++) {
-			if (inputID == Store.employees.get(i).getID()) {
-				
-				if (inputPass.equals(Store.employees.get(i).getPassword())) {
-					return true;
-				}
-			}	
+		for (int i = 0; i < StoreFacade.employees.size(); i++) {
+			if (inputID == StoreFacade.employees.get(i).getID() && inputPass.equals(StoreFacade.employees.get(i).getPassword())) {
+				return true;
+			}
 		}
 		
 		System.out.println("\nInvalid username and/or password. Please try again.");
@@ -108,9 +103,9 @@ public class LoginUI implements UI {
 	// Author: Michael
 	public Employee getCurrentEmployee(int inputID) {
 		
-		for (int i = 0; i < Store.employees.size(); i++) {
-			if (inputID == Store.employees.get(i).getID()) {
-				return Store.employees.get(i);
+		for (int i = 0; i < StoreFacade.employees.size(); i++) {
+			if (inputID == StoreFacade.employees.get(i).getID()) {
+				return StoreFacade.employees.get(i);
 			}
 		}
 		return null;
@@ -122,17 +117,16 @@ public class LoginUI implements UI {
 		
 		int threshold = 12;
 		
-		for (int i = 0; i < Store.stockItems.size(); i++) {
+		for (int i = 0; i < StoreFacade.stockItems.size(); i++) {
 			
-			Product currentProd = Store.stockItems.get(i).getProduct();
-			if (Store.stockItems.get(i).getQty() < threshold) {
+			Product currentProd = StoreFacade.stockItems.get(i).getProduct();
+			if (StoreFacade.stockItems.get(i).getQty() < threshold) {
 				
 				OrderItem currentItem = new OrderItem((i+1), currentProd, 4);
-				//currentItem.setApproved();
-				Store.orderItems.add(currentItem);
+				StoreFacade.orderItems.add(currentItem);
 			}
 		}
-		autoOrder.setOrderItems(Store.orderItems);
-		Store.orders.add(autoOrder);
+		autoOrder.setOrderItems(StoreFacade.orderItems);
+		StoreFacade.orders.add(autoOrder);
 	}
 }

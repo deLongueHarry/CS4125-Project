@@ -13,8 +13,7 @@ public class CriteriaStockEmployee implements Criteria	{
 			if (emp.getType().toLowerCase() == "stock employee")	{
 				stockEmployees.add(emp);
 			}
-		}
-		
+		}		
 		return stockEmployees;
 	}
 

@@ -13,8 +13,7 @@ public class CriteriaManager implements Criteria	{
 			if (emp.getType().toLowerCase() == "manager")	{
 				managers.add(emp);
 			}
-		}
-		
+		}		
 		return managers;
 	}
 

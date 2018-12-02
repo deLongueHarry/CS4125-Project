@@ -36,6 +36,6 @@ public class OrderItem
 	}
 	
 	public double getPrice() {
-		return prod.getCostPrice();
+		return price;
 	}
 }	

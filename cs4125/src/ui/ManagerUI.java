@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import cs4125.Store;
+import cs4125.StoreFacade;
 import customer.Customer;
 import employee.Employee;
 import transactions.Voucher;
@@ -27,7 +27,8 @@ public class ManagerUI implements UI {
 				if (input == 1) {
 					
 					validSelection = true;
-					StockEmployeeUI.OrderStock();
+					StockEmployeeUI ui = new StockEmployeeUI();
+					ui.OrderStock();
 				}
 				else if (input == 2) {
 					
@@ -75,12 +76,12 @@ public class ManagerUI implements UI {
 				// Register new customer
 				if (input == 1) {
 					
-					if (Store.stockItems.isEmpty()) {
+					if (StoreFacade.stockItems.isEmpty()) {
 						custID = 1;
 					}
 					else {
 						// assigns the entered product an ID number based on the last product ID in the list
-						Customer lastCust = Store.customers.get(Store.customers.size()-1);
+						Customer lastCust = StoreFacade.customers.get(StoreFacade.customers.size()-1);
 						custID = (lastCust.getCustID()) + 1;
 					}
 					
@@ -103,19 +104,18 @@ public class ManagerUI implements UI {
 					System.out.print("\nCredit card no: ");
 					List<Voucher> empty = new ArrayList<>();
 					String creditCard = in.nextLine();
-					Store.customers.add(new Customer(custID, 0, custName, creditCard, allergens, empty));
+					StoreFacade.customers.add(new Customer(custID, 0, custName, creditCard, allergens, empty));
 				}
 				// Remove customer from database
 				else if (input == 2) {
 					
 					System.out.print("\nEnter the ID of the customer you wish to remove: ");
-					try {
-						
+					try {						
 						int inputID = Integer.parseInt(in.nextLine());
-						for (int i = 0; i < Store.customers.size(); i++) {
+						for (int i = 0; i < StoreFacade.customers.size(); i++) {
 							
-							if (inputID == Store.customers.get(i).getCustID()) {
-								Store.customers.remove(i);
+							if (inputID == StoreFacade.customers.get(i).getCustID()) {
+								StoreFacade.customers.remove(i);
 							}
 						}
 						
@@ -142,7 +142,61 @@ public class ManagerUI implements UI {
 	}
 	
 	private void ViewRequests() {
+		int count = 1;
+		for (int i = 0; i < StoreFacade.orders.size(); i++)	{
+			if (!(StoreFacade.orders.get(i).isApproved()))	{
+				System.out.println("Item " + count + ":");
+				count++;
+				System.out.println("ID:\t" + StoreFacade.orders.get(i).getOrderID());
+				for (int j = 0; j < StoreFacade.orders.get(i).getOrderItems().size(); j++)	{
+					System.out.println("Item " + j + ":\t" + StoreFacade.orders.get(i).getOrderItems().get(j).getProduct().getProductName());
+				}
+				System.out.println("Date Ordered:\t" + StoreFacade.orders.get(i).getDateOrdered());
+				System.out.println("Employee:\t" + StoreFacade.orders.get(i).getEmp().getName());
+				if (StoreFacade.orders.get(i).isPaid())	{
+					System.out.println("Paid:\tTrue");
+				}
+				else	{
+					System.out.println("Paid:\tFalse");
+				}
+			}
+		}
 		
+		boolean valid = false;
+		int choice = 0;
+		double amount = 0;
+		String error = "Your choice does not match an order. Please try again.";
+		while (!valid)	{
+			boolean isValid = false;
+			System.out.println("To approve an order, input its ID number. To exit, enter 0.");
+			try	{
+				choice = Integer.parseInt(in.nextLine());
+				isValid = true;
+			}
+			catch(NumberFormatException e)	{
+				error = "Your answer must be in the form of a number.";
+			}
+			if (choice == 0)	{
+				break;
+			}
+			if (isValid)	{
+				for (int i = 0; i < StoreFacade.orders.size(); i++)	{
+					if (choice == StoreFacade.orders.get(i).getOrderID())	{
+						for (int j = 0; j < StoreFacade.orders.get(i).getOrderItems().size(); j++)	{
+							amount += StoreFacade.orders.get(i).getOrderItems().get(j).getPrice();
+						}
+						StoreFacade.ac.updateAmount(amount, false);
+						StoreFacade.orders.get(i).Approve();
+						StoreFacade.orders.get(i).setPaid(true);
+						valid = true;
+						System.out.println("Order " + choice + " approved.");
+					}
+				}
+			}
+			if (!valid)	{
+				System.out.println(error);
+			}
+		}
 	}
 	
 	//Allows adding, removing and viewing employees
@@ -165,13 +219,13 @@ public class ManagerUI implements UI {
 				boolean isValid = false;
 				
 				int ID = 0;
-				if (Store.employees.isEmpty())	{
+				if (StoreFacade.employees.isEmpty())	{
 					ID = 1;
 				}
 				else	{
-					for (int i = 0; i < Store.employees.size(); i++)	{
-						if (Store.employees.get(i).getID() > ID)	{
-							ID = Store.employees.get(i).getID() + 1;
+					for (int i = 0; i < StoreFacade.employees.size(); i++)	{
+						if (StoreFacade.employees.get(i).getID() > ID)	{
+							ID = StoreFacade.employees.get(i).getID() + 1;
 						}
 					}
 				}
@@ -210,7 +264,7 @@ public class ManagerUI implements UI {
 				System.out.println("Please enter the employee's phone number");
 				String phoneNo = in.nextLine();
 				
-				Store.employees.add(new Employee(ID, type, name, password, address, phoneNo));
+				StoreFacade.employees.add(new Employee(ID, type, name, password, address, phoneNo));
 				
 				valid = true;
 				break;
@@ -226,9 +280,9 @@ public class ManagerUI implements UI {
 						id = Integer.parseInt(in.nextLine());
 					}
 					catch(NumberFormatException e) {}
-					for (int i = 0; i < Store.employees.size(); i++)	{
-						if (id == Store.employees.get(i).getID())	{
-							Store.employees.remove(i);
+					for (int i = 0; i < StoreFacade.employees.size(); i++)	{
+						if (id == StoreFacade.employees.get(i).getID())	{
+							StoreFacade.employees.remove(i);
 							System.out.println("Employee successfully removed.");
 							isValid = true;
 						}
@@ -251,18 +305,18 @@ public class ManagerUI implements UI {
 						id = Integer.parseInt(in.nextLine());
 					}
 					catch(NumberFormatException e) {}
-					for (int i = 0; i < Store.employees.size(); i++)	{
-						if (id == Store.employees.get(i).getID())	{
-							System.out.println("ID:\t" + Store.employees.get(i).getID());
-							System.out.println("Type:\t" + Store.employees.get(i).getType());
-							System.out.println("Name:\t" + Store.employees.get(i).getName());
-							System.out.println("Address:\t" + Store.employees.get(i).getAddress());
-							System.out.println("Phone Number:\t" + Store.employees.get(i).getPhoneNo());
+					for (int i = 0; i < StoreFacade.employees.size(); i++)	{
+						if (id == StoreFacade.employees.get(i).getID())	{
+							System.out.println("ID:\t" + StoreFacade.employees.get(i).getID());
+							System.out.println("Type:\t" + StoreFacade.employees.get(i).getType());
+							System.out.println("Name:\t" + StoreFacade.employees.get(i).getName());
+							System.out.println("Address:\t" + StoreFacade.employees.get(i).getAddress());
+							System.out.println("Phone Number:\t" + StoreFacade.employees.get(i).getPhoneNo());
 							isValid = true;
 						}
-						else if (i + 1 == Store.employees.size())	{
-							System.out.println("You have entered an invalid ID. Please try again.");
-						}
+					}
+					if (!isValid)	{
+						System.out.println("You have entered an invalid ID. Please try again.");
 					}
 				}
 				valid = true;

@@ -4,8 +4,10 @@ import java.util.List;
 import transactions.Voucher;
 
 public class Customer {
-	private int custID, custPoints;
-	private String custName, creditCard;
+	private int custID;
+	private int custPoints;
+	private String custName;
+	private String creditCard;
 	private List<String> allergens;
 	private List<Voucher> vouchers;
 	

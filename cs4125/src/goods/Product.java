@@ -4,11 +4,13 @@ import java.util.List;
 
 public class Product {
 
-	int productID;
-	String productName, productType, company;
-	double costPrice;
-	int minimumOrder;
-	List<String> allergens;
+	private int productID;
+	private String productName;
+	private String productType;
+	private String company;
+	private double costPrice;
+	private int minimumOrder;
+	private List<String> allergens;
 	
 	public Product(int ID, String name, String type, String comp, double costPrice, int minimumOrder, List<String> allergens) {
 		

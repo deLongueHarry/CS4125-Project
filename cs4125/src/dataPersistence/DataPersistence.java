@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import cs4125.StoreFacade;
 import employee.*;
 import goods.*;
 import transactions.*;
@@ -15,9 +16,27 @@ import account.Account;
 //Writes data to files
 //Author: Alex
 public class DataPersistence {
-	public int i, j, listSize;
-	public String eachLine = "";
-	public DataPersistence() {}
+	private int i;
+	private int j;
+	private int listSize;
+	private String eachLine;
+	
+	public DataPersistence() {
+		eachLine = "";
+	}
+	
+	//Runs the DataPersistenceLayer
+	public void run() throws IOException	{
+		employeesToFile(StoreFacade.employees);
+		customersToFile(StoreFacade.customers);
+		productsToFile(StoreFacade.products);
+		ordersToFile(StoreFacade.orders);
+		stockItemsToFile(StoreFacade.stockItems);
+		orderItemsToFile(StoreFacade.orderItems);
+		salesToFile(StoreFacade.sales);
+		returnsToFile(StoreFacade.returnsList);
+		accountToFile(StoreFacade.ac);
+	}
 	
 	//Writing employees to file
 	public void employeesToFile(List <Employee> employees)	throws IOException	{
@@ -30,7 +49,7 @@ public class DataPersistence {
 			
 			Employee temp = employees.get(i);
 			
-			for (int j = 0; j < man.size(); j++)	{
+			for (j = 0; j < man.size(); j++)	{
 				if (employees.get(i) == man.get(j))	{
 					eachLine += "m";
 				}
@@ -47,9 +66,9 @@ public class DataPersistence {
 				eachLine += "\n";
 			
 		}
-		BufferedWriter empWriter = new BufferedWriter(new FileWriter(emp));
-		empWriter.write(eachLine);
-		empWriter.close();
+		try (BufferedWriter empWriter = new BufferedWriter(new FileWriter(emp));)	{
+			empWriter.write(eachLine);
+		}
 	}
 	
 	//Writing customers to file
@@ -61,10 +80,9 @@ public class DataPersistence {
 		
 		for (i = 0; i < customers.size(); i++) {
 
-			Customer temp = customers.get(i);	
-			//ArrayList allergenList = (ArrayList) temp.getAllergens().clone();
+			Customer temp = customers.get(i);
 			List<String> allergenList = new ArrayList<>();
-			for (int j = 0; j < temp.getAllergens().size(); j++)	{
+			for (j = 0; j < temp.getAllergens().size(); j++)	{
 				allergenList.add(temp.getAllergens().get(j));
 			}
 			
@@ -95,9 +113,10 @@ public class DataPersistence {
 			if (i != customers.size() - 1)
 				eachLine += "\n";
 		}
-		BufferedWriter custWriter = new BufferedWriter(new FileWriter(cust));
-		custWriter.write(eachLine);
-		custWriter.close();
+		
+		try (BufferedWriter custWriter = new BufferedWriter(new FileWriter(cust));)	{
+			custWriter.write(eachLine);
+		}
 	}
 	
 	//Writing products to file
@@ -110,9 +129,8 @@ public class DataPersistence {
 		for (i = 0; i < products.size(); i++)	{
 			
 			Product temp = products.get(i);
-			//ArrayList allergenList = (ArrayList) temp.getAllergens().clone();
 			List<String> allergenList = new ArrayList<>();
-			for (int j = 0; j < temp.getAllergens().size(); j++)	{
+			for (j = 0; j < temp.getAllergens().size(); j++)	{
 				allergenList.add(temp.getAllergens().get(j));
 			}
 			
@@ -120,25 +138,20 @@ public class DataPersistence {
 							+ temp.getCompany() + "," +  Double.toString(temp.getCostPrice()) + "," 
 								+ Integer.toString(temp.getMinimumOrder()) + ",";
 			
-			if (allergenList != null) {
-				listSize = allergenList.size();
-				
-				
-				for (j = 0; j < listSize; j++)	{
-					eachLine += allergenList.get(j);
-					if (j != listSize - 1)
-						eachLine += "/";
-				}
+			listSize = allergenList.size();
+			for (j = 0; j < listSize; j++)	{
+				eachLine += allergenList.get(j);
+				if (j != listSize - 1)
+					eachLine += "/";
 			}
-
-			eachLine += ",";
-			
+			eachLine += ",";			
 			if (i != products.size() - 1)
 				eachLine += "\n";
 		}
-		BufferedWriter prodWriter = new BufferedWriter(new FileWriter(prod));
-		prodWriter.write(eachLine);
-		prodWriter.close();
+		
+		try (BufferedWriter prodWriter = new BufferedWriter(new FileWriter(prod));)	{
+			prodWriter.write(eachLine);
+		}
 	}
 	
 	//Writing orders to file
@@ -155,7 +168,6 @@ public class DataPersistence {
 			
 			if (temp.getOrderItems() != null)	{
 				listSize = temp.getOrderItems().size();
-				
 				for (j = 0; j < listSize; j++)	{
 					eachLine += Integer.toString(temp.getOrderItems().get(j).getItmID());
 					if (j != listSize - 1)
@@ -173,9 +185,9 @@ public class DataPersistence {
 			if (i != orders.size() - 2)
 				eachLine += "\n";
 		}
-		BufferedWriter ordWriter = new BufferedWriter(new FileWriter(ord));
-		ordWriter.write(eachLine);
-		ordWriter.close();
+		try (BufferedWriter ordWriter = new BufferedWriter(new FileWriter(ord));)	{
+			ordWriter.write(eachLine);
+		}
 	}
 	
 	//Writing stock items to file
@@ -196,12 +208,12 @@ public class DataPersistence {
 			if (i != stockItems.size() - 1)
 				eachLine += "\n";
 		}
-		BufferedWriter stockWriter = new BufferedWriter(new FileWriter(stock));
-		stockWriter.write(eachLine);
-		stockWriter.close();
+		try (BufferedWriter stockWriter = new BufferedWriter(new FileWriter(stock));)	{
+			stockWriter.write(eachLine);
+		}
 	}
 	
-	//Writing order items to file;
+	//Writing order items to file
 	public void orderItemsToFile(List <OrderItem> orderItems) throws IOException	{
 		
 		File orderItem = new File("orderitems.txt");
@@ -219,9 +231,9 @@ public class DataPersistence {
 				eachLine += "\n";
 		}
 		
-		BufferedWriter ordItWriter = new BufferedWriter(new FileWriter(orderItem));
-		ordItWriter.write(eachLine);
-		ordItWriter.close();
+		try (BufferedWriter ordItWriter = new BufferedWriter(new FileWriter(orderItem));)	{
+			ordItWriter.write(eachLine);
+		}
 	}
 		
 	//Writing sales to file
@@ -249,9 +261,9 @@ public class DataPersistence {
 			if (i != sales.size() - 1)
 				eachLine += "\n";
 		}
-		BufferedWriter saleWriter = new BufferedWriter(new FileWriter(sale));
-		saleWriter.write(eachLine);
-		saleWriter.close();
+		try (BufferedWriter saleWriter = new BufferedWriter(new FileWriter(sale));)	{
+			saleWriter.write(eachLine);
+		}
 	}
 	
 	//Writing Returns to file
@@ -278,9 +290,9 @@ public class DataPersistence {
 			if (i != returnsList.size() - 1)
 				eachLine += "\n";
 		}
-		BufferedWriter returnsWriter = new BufferedWriter(new FileWriter(returns));
-		returnsWriter.write(eachLine);
-		returnsWriter.close();
+		try (BufferedWriter returnsWriter = new BufferedWriter(new FileWriter(returns));)	{
+			returnsWriter.write(eachLine);
+		}
 	}
 		
 	//Writing Account to file
@@ -289,8 +301,8 @@ public class DataPersistence {
 		File account = new File("ac.txt");
 		account.createNewFile();
 		
-		BufferedWriter accountWriter = new BufferedWriter(new FileWriter(account));
-		accountWriter.write("" + ac.getAmount());
-		accountWriter.close();
+		try (BufferedWriter accountWriter = new BufferedWriter(new FileWriter(account));)	{
+			accountWriter.write("" + ac.getAmount());
+		}
 	}
 }

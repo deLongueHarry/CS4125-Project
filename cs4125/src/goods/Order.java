@@ -16,7 +16,7 @@ public class Order
 		
 	}
 	
-	public Order(int orderID, List<OrderItem> orderItems, String dateOrdered, Employee emp, boolean approved, boolean paid) 
+	public Order(int orderID, List<OrderItem> orderItems, String dateOrdered, Employee emp, boolean approved, boolean paid)
 	{
 		this.orderID = orderID;
 		this.orderItems = orderItems;
