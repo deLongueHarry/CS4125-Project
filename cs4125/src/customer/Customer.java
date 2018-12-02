@@ -1,19 +1,21 @@
 package customer;
 
-import java.util.ArrayList;
+import java.util.List;
 import transactions.Voucher;
 
 public class Customer {
-	private int custID, custPoints;
-	private String custName, creditCard;
-	private ArrayList<String> allergens;
-	private ArrayList<Voucher> vouchers;
+	private int custID;
+	private int custPoints;
+	private String custName;
+	private String creditCard;
+	private List<String> allergens;
+	private List<Voucher> vouchers;
 	
 	public Customer(int custID)	{
 		this.custID = custID;
 	}
 	
-	public Customer(int custID, int custPoints, String custName, String creditCard, ArrayList<String> allergens, ArrayList<Voucher> vouchers)	{
+	public Customer(int custID, int custPoints, String custName, String creditCard, List<String> allergens, List<Voucher> vouchers)	{
 		this.custID = custID;
 		this.custPoints = custPoints;
 		this.custName = custName;
@@ -41,19 +43,19 @@ public class Customer {
 		return custPoints;
 	}
 	
-	public ArrayList<String> getAllergens()	{
+	public List<String> getAllergens()	{
 		return allergens;
 	}
 	
-	public void setAllergens(ArrayList<String> allergens)	{
+	public void setAllergens(List<String> allergens)	{
 		this.allergens = allergens;
 	}
 	
-	public ArrayList<Voucher> getVouchers()	{
+	public List<Voucher> getVouchers()	{
 		return vouchers;
 	}
 	
-	public void setVouchers(ArrayList<Voucher> vouchers)	{
+	public void setVouchers(List<Voucher> vouchers)	{
 		this.vouchers = vouchers;
 	}
 	

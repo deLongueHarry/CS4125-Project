@@ -1,12 +1,13 @@
 package transactions;
 
-import java.util.ArrayList;
-import goods.StockItem;
+import java.util.List;
+
+import stock.StockItem;
 
 public class Transactions {
 	private int transID;
 	private double amount;
-	private ArrayList<StockItem> items;
+	private List<StockItem> items;
 	private int custID;
 	private String cardNumb;
 	
@@ -15,8 +16,8 @@ public class Transactions {
 	public Transactions(int transID)	{
 		this.transID = transID;
 	}
-	
-	public Transactions(int transID, double amount, ArrayList<StockItem> items, int custID, String cardNumb)	{
+
+	public Transactions(int transID, double amount, List<StockItem> items, int custID, String cardNumb)	{
 		this.transID = transID;
 		this.amount = amount;
 		this.items = items;
@@ -40,11 +41,11 @@ public class Transactions {
 		this.amount = amount;
 	}
 	
-	public ArrayList<StockItem> getItems()	{
+	public List<StockItem> getItems()	{
 		return items;
 	}
 	
-	public void setItems(ArrayList<StockItem> items)	{
+	public void setItems(List<StockItem> items)	{
 		this.items = items;
 	}
 	

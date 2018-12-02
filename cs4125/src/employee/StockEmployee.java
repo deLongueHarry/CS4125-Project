@@ -1,6 +1,6 @@
 package employee;
 
-public class StockEmployee implements Employee {
+public class StockEmployee extends Employee {
 
 	private int ID;
 	private String name;

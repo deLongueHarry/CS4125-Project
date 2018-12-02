@@ -1,16 +1,15 @@
 package ui;
 
 import employee.*;
-import goods.Order;
-import goods.OrderItem;
-import goods.Product;
-import cs4125.Store;
+import retailStore.StoreFacade;
 
+import java.util.List;
 import java.util.Scanner;
 
+// Author: Michael
 public class LoginUI implements UI {
-
-	public static Employee emp;		// Current employee logged in to the system
+	
+	public static Employee emp;
 	private Scanner in = new Scanner(System.in);
 	
 	public void startInterface() {
@@ -37,9 +36,7 @@ public class LoginUI implements UI {
 				System.out.print("\nLogin ID: ");
 				inputID = Integer.parseInt(in.nextLine());
 			}
-			catch (NumberFormatException e) {
-				
-			}
+			catch (NumberFormatException e) {}
 			
 			System.out.print("Password: ");
 			String inputPass = in.nextLine();	
@@ -53,13 +50,28 @@ public class LoginUI implements UI {
 				
 				System.out.printf("\n\n************* %d *************\n\nLogged in as: %s", emp.getID(), emp.getName());
 				
-				if (emp instanceof Manager) {
-					currentUI = new ManagerUI();
-				}
-				if (emp instanceof StockEmployee) {
-					currentUI = new StockEmployeeUI();
-				}
+				Criteria crit = new CriteriaManager();
+				List<Employee> managers = crit.meetCriteria(StoreFacade.employees);
+				crit = new CriteriaStockEmployee();
+				List<Employee> stockEmps = crit.meetCriteria(StoreFacade.employees);
 				
+				for (int i = 0; i < managers.size(); i++)
+				{
+					if (managers.get(i) == emp)
+					{
+						currentUI = new ManagerUI();
+					}
+					else
+					{
+						for (int j = 0; j < stockEmps.size(); j++)
+						{
+							if (stockEmps.get(j) == emp)
+							{
+								currentUI = new StockEmployeeUI();
+							}
+						}
+					}
+				}			
 				
 				currentUI.startInterface();
 				in.close();
@@ -70,16 +82,12 @@ public class LoginUI implements UI {
 	}
 	
 	// Checks if the login information matches a current employee in the database
-	// Author: Michael
 	private boolean checkValidLogin(int inputID, String inputPass) {
 
-		for (int i = 0; i < Store.employees.size(); i++) {
-			if (inputID == Store.employees.get(i).getID()) {
-				
-				if (inputPass.equals(Store.employees.get(i).getPassword())) {
-					return true;
-				}
-			}	
+		for (int i = 0; i < StoreFacade.employees.size(); i++) {
+			if (inputID == StoreFacade.employees.get(i).getID() && inputPass.equals(StoreFacade.employees.get(i).getPassword())) {
+				return true;
+			}
 		}
 		
 		System.out.println("\nInvalid username and/or password. Please try again.");
@@ -89,34 +97,13 @@ public class LoginUI implements UI {
 	}
 	
 	// Determines which employee is using the system
-	// Author: Michael
 	public Employee getCurrentEmployee(int inputID) {
 		
-		for (int i = 0; i < Store.employees.size(); i++) {
-			if (inputID == Store.employees.get(i).getID()) {
-				return Store.employees.get(i);
+		for (int i = 0; i < StoreFacade.employees.size(); i++) {
+			if (inputID == StoreFacade.employees.get(i).getID()) {
+				return StoreFacade.employees.get(i);
 			}
 		}
 		return null;
-	}
-	
-	public void checkStockLevels() {
-		
-		Order autoOrder = new Order();
-		
-		int threshold = 12;
-		
-		for (int i = 0; i < Store.stockItems.size(); i++) {
-			
-			Product currentProd = Store.stockItems.get(i).getProduct();
-			if (Store.stockItems.get(i).getQty() < threshold) {
-				
-				OrderItem currentItem = new OrderItem((i+1), currentProd, 4);
-				Store.orderItems.add(currentItem);
-			}
-		}
-		autoOrder.setOrderItems(Store.orderItems);
-		Store.orders.add(autoOrder);
-		Store.orderItems.clear();
 	}
 }

@@ -1,6 +1,6 @@
 package employee;
 
-public class Manager implements Employee {
+public class Manager extends Employee {
 
 	private int ID;
 	private String name;

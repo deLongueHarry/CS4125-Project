@@ -1,17 +1,18 @@
 package ui;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
-import goods.*;
+
 import transactions.*;
-import cs4125.*;
 import customer.Customer;
 import employee.*;
+import retailStore.StoreFacade;
+import stock.*;
 
-public class TransactionsUI	implements UI{
+public class TransactionsUI	implements UI	{
 	
-	public Manager emp = new Manager();
-	
+	private Employee emp = new Employee();
 	private Scanner in = new Scanner(System.in);
 	
 	//Begins UI
@@ -33,19 +34,19 @@ public class TransactionsUI	implements UI{
 			case 0:
 				break;
 			case 1:
-				Transactions newSale = createSale(findTransactionID(), Store.products, Store.stockItems);
-				Store.sales.add(newSale);
-				Store.ac.updateAmount(newSale.getAmount(), true);
+				Transactions newSale = createSale(findTransactionID(), StoreFacade.products, StoreFacade.stockItems);
+				StoreFacade.sales.add(newSale);
+				StoreFacade.ac.updateAmount(newSale.getAmount(), true);
 				break;
 				
 			case 2:
-				Transactions newReturn = createReturn(findTransactionID(), Store.sales, Store.stockItems);
-				Store.returnsList.add(newReturn);
-				Store.ac.updateAmount(newReturn.getAmount(), false);
+				Transactions newReturn = createReturn(findTransactionID(), StoreFacade.sales);
+				StoreFacade.returnsList.add(newReturn);
+				StoreFacade.ac.updateAmount(newReturn.getAmount(), false);
 				break;
 				
 			case 3:
-				System.out.println(viewTransaction(Store.sales, Store.returnsList, Store.products));
+				System.out.println(viewTransaction(StoreFacade.sales, StoreFacade.returnsList));
 				break;
 				
 			default:
@@ -56,9 +57,9 @@ public class TransactionsUI	implements UI{
 		}
 		
 		else	{
-			Transactions newSale = createSale(findTransactionID(), Store.products, Store.stockItems);
-			Store.ac.updateAmount(newSale.getAmount(), true);
-			Store.sales.add(newSale);
+			Transactions newSale = createSale(findTransactionID(), StoreFacade.products, StoreFacade.stockItems);
+			StoreFacade.ac.updateAmount(newSale.getAmount(), true);
+			StoreFacade.sales.add(newSale);
 		}
 		
 	}
@@ -66,16 +67,16 @@ public class TransactionsUI	implements UI{
 	//Generates a transactionID
 	//Author: Alex
 	public int findTransactionID()	{
-		int transID = 0;
-		for (int i = 0; i < Store.sales.size(); i++)	{
-			if (transID < Store.sales.get(i).getTransID())	{
-				transID = Store.sales.get(i).getTransID();
+		int transID = 1;
+		for (int i = 0; i < StoreFacade.sales.size(); i++)	{
+			if (transID < StoreFacade.sales.get(i).getTransID())	{
+				transID = StoreFacade.sales.get(i).getTransID() + 1;
 			}
 		}
 		
-		for (int i = 0; i < Store.returnsList.size(); i++)	{
-			if (transID < Store.returnsList.get(i).getTransID())	{
-				transID = Store.returnsList.get(i).getTransID();
+		for (int i = 0; i < StoreFacade.returnsList.size(); i++)	{
+			if (transID < StoreFacade.returnsList.get(i).getTransID())	{
+				transID = StoreFacade.returnsList.get(i).getTransID();
 			}
 		}
 		
@@ -84,12 +85,12 @@ public class TransactionsUI	implements UI{
 	
 	//Creates a new Sale
 	//Author: Alex
-	public Transactions createSale(int transID, ArrayList<Product> products, ArrayList<StockItem> stockItems)	{
+	public Transactions createSale(int transID, List<Product> products, List<StockItem> stockItems)	{
 		double amount = 0;
 		String cardNumb = "";
 		int custID = 0;
 		boolean check = false;
-		ArrayList<StockItem> items = new ArrayList<StockItem>();
+		List<StockItem> items = new ArrayList<>();
 		//Getting customer details
 		Customer current = new Customer();
 		while (!check)
@@ -99,20 +100,20 @@ public class TransactionsUI	implements UI{
 			{
 				custID = Integer.parseInt(in.nextLine());
 				current = new Customer(custID);
-				for (int p = 0; p < Store.customers.size(); p++)	{
-					if (custID == Store.customers.get(p).getCustID())	{
-						current = Store.customers.get(p);
+				for (int p = 0; p < StoreFacade.customers.size(); p++)	{
+					if (custID == StoreFacade.customers.get(p).getCustID())	{
+						current = StoreFacade.customers.get(p);
 						check = true;					
 					}
 				}
 			}
-			catch (Exception e){}
+			catch (Exception e) {}
 			if (!check)
 			{
-				System.out.println("Your input is not valid, please try again.");
+				System.out.println("Your input does not match a customer ID in our files, please try again");
 			}
 		}
-		
+		System.out.println("Logged in as: " + current.getName());
 		check = false;
 		String input = "";
 		//Receives the items being added to the Sale from the addItems() method
@@ -130,11 +131,10 @@ public class TransactionsUI	implements UI{
 		String[] inputArr = input.split(",");
 		for (int i = 0; i < inputArr.length; i+=2) {
 			for (int j = 0; j < products.size(); j++)	{
-				if (inputArr[i].equals(products.get(j).getProductName().toLowerCase()))	{
+				if (inputArr[i].equalsIgnoreCase(products.get(j).getProductName()))	{
 					for (int k = 0; k < stockItems.size(); k++) {
 						if (stockItems.get(k).getProduct() == products.get(j))	{
-							//int stockItmID, Product prod, int qty, String useBy
-							if (items.size() > 0)
+							if (items.isEmpty())
 							{
 								items.add(new StockItem(items.get(items.size()).getItmID() + 1, products.get(j), stockItems.get(k).getQty(), stockItems.get(k).getUseBy()));
 							}
@@ -148,7 +148,6 @@ public class TransactionsUI	implements UI{
 			}
 		}
 		//Getting customer card numbers from their profie or adding a new one 
-		check = false;
 		if (current.getCreditCard() != "")	{
 			cardNumb = current.getCreditCard();
 		}
@@ -157,13 +156,12 @@ public class TransactionsUI	implements UI{
 		//Checking if customer would like to use one of their vouchers
 		int voucherChoice = 0;
 		double discount = 0;
-		if (current.getVouchers().size() > 0)	{
+		if (current.getVouchers().isEmpty())	{
 			check = false;
 			while (!check)	{
 				System.out.println("Please input the ID number of the voucher you would like to use, or 0 to skip this step.");
 				for (int h = 0; h < current.getVouchers().size(); h++)	{
-					System.out.println("ID:\t" + current.getVouchers().get(h).getVoucherNo());
-					System.out.println("Amount:\t" + current.getVouchers().get(h).getAmount() + "\n");
+					System.out.println("ID:\t" + current.getVouchers().get(h).getVoucherNo() + "\nAmount:\t" + current.getVouchers().get(h).getAmount() + "\n");
 				}
 				try	{
 					voucherChoice = Integer.parseInt(in.nextLine());
@@ -203,16 +201,16 @@ public class TransactionsUI	implements UI{
 	
 	//Creates a new return
 	//Author: Alex
-	public Transactions createReturn(int transID, ArrayList<Transactions> sale, ArrayList<StockItem> stockItems)	{
+	public Transactions createReturn(int transID, List<Transactions> sale)	{
 		double amount = 0;
-		ArrayList<StockItem> items = new ArrayList<StockItem>();
+		List<StockItem> items = new ArrayList<>();
 		int custID = 0;
 		String cardNumb = "";
 		//Gets the relevant information from the matching sale
 		for (int i = 0; i < sale.size(); i++)	{
 			if (transID == (sale.get(i).getTransID()))	{
 				amount = sale.get(i).getAmount();
-				stockItems = sale.get(i).getItems();
+				items = sale.get(i).getItems();
 				custID = sale.get(i).getCustID();
 				cardNumb = sale.get(i).getCardNumb();
 			}
@@ -220,56 +218,54 @@ public class TransactionsUI	implements UI{
 		//Returns error message if there are no sales that match
 		if ((amount == 0) && (custID == 0)) {
 			System.out.println("Your transaction ID does not correspond to a sale.");
-			Transactions newReturn = new Transactions(0, 0, new ArrayList<StockItem>(), 0, "0");
-			return newReturn;
+			return(new Transactions(0, 0, new ArrayList<StockItem>(), 0, "0"));
 		}
 		//Returns the new Return
 		else	{
 			TransactionsFactory fact = new TransactionsFactory();
-			Transactions newReturn = fact.getTransactions("returns", transID, amount, items, custID, cardNumb);
-			return newReturn;
+			return(fact.getTransactions("returns", transID, amount, items, custID, cardNumb));
 		}
 	}
 	
 	//Adds the items to the new Sale
 	//Author: Alex
-	public String addItems(ArrayList<Product> products, Customer current)	{
+	public String addItems(List<Product> products, Customer current)	{
 		boolean valid = false;
 		String out = "";
 		String choice;
-		ArrayList<String> allergens =  new ArrayList<String>();
+		ArrayList<String> allergens =  new ArrayList<>();
 		//Prints the products available for sale
 		for (int h = 0; h < products.size(); h++)	{
 			System.out.println(products.get(h).getProductName());
 		}
 		System.out.println("Please input a product from the list above. Alternately, if you are finished adding products, please enter 0.");
 		choice = in.nextLine().toLowerCase();
-		//Receives the product name or exist method when customer is finished
-		switch(choice) {
-			case "0":
-				out = "done";
-				break;
-				
-			default:
-				for (int i = 0; i < products.size(); i++)	{
-					if (choice.matches(products.get(i).getProductName().toLowerCase()))	{
-						valid = true;
-
-						for (int j = 0; j < current.getAllergens().size(); j++)	{
-							for (int k = 0; k < products.get(i).getAllergens().size(); k++)	{
-								if (current.getAllergens().get(j) == products.get(i).getAllergens().get(k))	{
-									allergens.add(current.getAllergens().get(j).toString());
-								}
+		
+		//Receives the product name or exits method when customer is finished
+		if (choice.equals("done"))	{
+			out = "done";
+		}
+		//Checks product's allergen information vs customer's allergens
+		else	{
+			for (int i = 0; i < products.size(); i++)	{
+				if (choice.matches(products.get(i).getProductName().toLowerCase()))	{
+					valid = true;			
+					for (int j = 0; j < current.getAllergens().size(); j++)	{
+						for (int k = 0; k < products.get(i).getAllergens().size(); k++)	{
+							if (current.getAllergens().get(j).equals(products.get(i).getAllergens().get(k)))	{
+								allergens.add(current.getAllergens().get(j));
 							}
 						}
 					}
 				}
-				break;
+			}
 		}
-		//Adds new entry to return
+		
+		
+		//Gives customer option of not buying items if they are allergic to them
 		String yesNo = "y";
 		if (!(out.equals("done")) && valid)	{
-			if (allergens.size() > 0)
+			if (!(allergens.isEmpty()))
 			{
 				System.out.println("Are you sure you wish to purchase " + choice + "? It contains these items from your list of allergens:");
 				for (int q = 0; q < allergens.size(); q++)	{
@@ -300,12 +296,9 @@ public class TransactionsUI	implements UI{
 		return out;
 	}
 
-	//Lets user view a transaction
-	//Author: Alex
-	
 	//Lets employee view details of a transaction
 	//Author: Alex
-	public String viewTransaction(ArrayList<Transactions> sale, ArrayList<Transactions> returnsList, ArrayList<Product> products)	{
+	public String viewTransaction(List<Transactions> sale, List<Transactions> returnsList)	{
 		System.out.println("Please input the TransactionID of the transaction you wish to view.");
 		int transID = Integer.parseInt(in.nextLine());
 		int count = 1;
@@ -317,7 +310,7 @@ public class TransactionsUI	implements UI{
 				System.out.println("Amount:\t" + sale.get(i).getAmount());
 				System.out.println("Customer ID:\t" + sale.get(i).getCustID());
 				
-				ArrayList<StockItem> s = sale.get(i).getItems();
+				List<StockItem> s = sale.get(i).getItems();
 				for (int j = 0; j < s.size(); j++)	{
 					System.out.println("Item " + count + ":");
 					System.out.println("Product ID:\t" + s.get(j).getProduct().getProductID()); //company, price, useBy
@@ -335,7 +328,7 @@ public class TransactionsUI	implements UI{
 				System.out.println("Amount:\t" + returnsList.get(i).getAmount());
 				System.out.println("Customer ID:\t" + returnsList.get(i).getCustID());
 				
-				ArrayList<StockItem> r = returnsList.get(i).getItems();
+				List<StockItem> r = returnsList.get(i).getItems();
 				for (int j = 0; j < r.size(); j++)	{
 					System.out.println("Item " + count + ":");
 					System.out.println("Product ID:\t" + r.get(j).getProduct().getProductID()); //company, price, useBy

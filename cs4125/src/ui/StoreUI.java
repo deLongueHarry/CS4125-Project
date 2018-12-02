@@ -2,6 +2,7 @@ package ui;
 
 import java.util.Scanner;
 
+// Author: Michael
 public class StoreUI implements UI {
 
 	private Scanner in = new Scanner(System.in);
