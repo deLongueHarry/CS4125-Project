@@ -54,113 +54,113 @@ public class StockEmployeeUI implements UI {
 		}
 	}
 	
-	//Creates Order
-	//author: Harry
+	// Enables user to create new orders
+	// Author Michael
 	public void OrderStock()
 	{
-		boolean approved;
-		boolean paid;
-		if (LoginUI.emp.getType().equals("manager")) {
+
+		List<OrderItem> items = new ArrayList<> ();
+		Account acc = retailStore.Account.instanceOf();
+		Employee tempEmp = LoginUI.emp;
+		
+		Date d = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");	
+		String dateOrdered = sdf.format(d);		
+		
+		String error = "Invalid input, please enter a valid number.";
+	
+		boolean approved, paid;
+		double totalOrderCost = 0;
+		int orderID;	
+		
+		if (tempEmp.getType().equals("manager")) {
 			approved = true;
-			paid = true;
 		}
 		else {
 			approved = false;
-			paid = false;
 		}
-		if (approved)	{
-			List<OrderItem> items = new ArrayList<> ();
-			boolean check = false;
-			String input = "";
-			System.out.println("Enter order ID: ");
-			int orderID = Integer.parseInt(in.nextLine());
-			while(!check)
-			{
-				String checker = createOrder();
-				if(!(checker.equals("done")))
-				{
-					input += checker;
-				}
-				else
-					check = true;
-			}
-			//converts returned result from createOrder to a string array and splits at every name/price
-			String[] inputArray = input.split(",");
-			for(int i = 0; i < inputArray.length; i += 2)
-			{
-				for(int j = 0; j < StoreFacade.products.size(); j++)
-				{
-					if(inputArray[i].equals(StoreFacade.products.get(j).getProductName()))
-					{
-						OrderItem oItm = new OrderItem(j, StoreFacade.orderItems.get(j).getProduct(), StoreFacade.orderItems.get(j).getQty());
-						items.add(oItm);
-					}
-				}
-			}
-			Date d = new java.util.Date();
-			SimpleDateFormat sdf = new SimpleDateFormat("ddmmyy");
-			String dateOrdered = sdf.format(d);
+		
+		viewProducts();
+		
+		boolean validSelection = false;
+		while (!validSelection) {
 			
-			StoreFacade.orders.add(new Order(orderID, items, dateOrdered, LoginUI.emp, approved, paid));
-		}
-	}
-	
-	//Finds list of order items
-	//Author: Harry
-	private String createOrder()
-	{		
-		System.out.println("Press 1 to place an Order\n Press 0 to Quit\n");
-		int newOrder = Integer.parseInt(in.nextLine());
-		if (newOrder == 1)
-		{
-			boolean valid = false;
-			System.out.println("Enter items to be ordered");
-			String out = "";
-			String choice = "";
-			//Print product names from txt file(products.txt)
-			for(int i = 0; i < StoreFacade.products.size(); i++)
-			{
-				viewProducts();
-			}	
-			System.out.println("Please input products from the list above to be ordered. When you are finished, enter 0");
-			//reads user input and writes chosen products to text file order.txt
-			try{
-					choice = in.nextLine().toLowerCase();
-				} catch (Exception e) {
-					System.out.println("Input does not match products");
-				}
-				switch(choice)
-				{
-				case "0":
-					out = "done";
-					System.out.println("order has been placed.");
-					break;
-				default:
-					for (int i = 0; i < StoreFacade.products.size(); i++)	{
-						if (choice.matches(StoreFacade.products.get(i).getProductName().toLowerCase()))	{
-							valid = true;
-							}
-						}	
-					break;
-				}
-					if (!(out.equals("done")) && valid)	{
-						out += choice + ",";
-						try	{
-								System.out.println("Please enter amount of this item to be ordered.");
-								out += in.nextLine();
-							}
-							catch(NumberFormatException e) {
-								System.out.println("Please give your input in the form of a number.");
-							}
+			Product tempProd = null;			
+			System.out.print("\nEnter the ID of the product you wish to order: ");
+			try {
+				int input = Integer.parseInt(in.nextLine());
+				for (int i = 0; i < StoreFacade.products.size(); i++) {
+					
+					if (input == StoreFacade.products.get(i).getProductID()) {
+						
+						tempProd = StoreFacade.products.get(i);
+						System.out.print("\n\n" + tempProd.getProductName()	+ " comes in boxes of "
+											+ tempProd.getMinimumOrder() + ".");
+						
+						int orderItmID, qty = 0;
+						if (StoreFacade.orderItems.isEmpty()) 
+							orderItmID = 1;
+						else {
+							
+							// assigns the entered product an ID number based on the last product ID in the list
+							OrderItem lastOrderItem = StoreFacade.orderItems.get(StoreFacade.orderItems.size()-1);
+							orderItmID = (lastOrderItem.getItmID()) + 1;
+						}		
+						
+						boolean qtyDone = false;
+						while(!qtyDone) {
+							 System.out.print("\nEnter the no. of boxes you wish to order: ");
+							 qty = Integer.parseInt(in.nextLine());
+							 
+							 if (qty > 0)
+								 qtyDone = true;
+							 else {
+								 System.out.print("\nInvalid input. Enter a positive number of boxes to order: ");
+							 }
+			
+						}
+						int totalQty = tempProd.getMinimumOrder() * qty;
+						totalOrderCost += (tempProd.getCostPrice() * totalQty);
+						
+						OrderItem tempOI = new OrderItem(orderItmID, tempProd, totalQty);
+						StoreFacade.orderItems.add(tempOI);
+						items.add(tempOI);
 					}
+				}
 				
-					else if (!(out.equals("done")) && !(valid))	
-					{
-						System.out.println("Input does not match any products. Please try again");
-					}
-					return out;
-				}
-		return "";
+				
+			} catch (NumberFormatException p) {
+				System.out.println(error);
+			}
+			
+			System.out.print("\n\nFinished ordering? (Y/y/N/n) ");
+			String done = in.nextLine();
+			if (done.equalsIgnoreCase("y")) {
+				validSelection = true;
+			}			
+			else
+				validSelection = false;	
+		}
+		
+		// checks if the orderItems List has at least 1 existing product item
+		if (StoreFacade.orders == null) 
+			orderID = 1;
+		else {
+			// assigns the entered order an ID number based on the last order ID in the list
+			Order lastOrder = StoreFacade.orders.get(StoreFacade.orders.size()-1);
+			orderID = (lastOrder.getOrderID()) + 1;
+			
+			paid = acc.paymentSuccessful(totalOrderCost);			
+			StoreFacade.orders.add(new Order(orderID, items, dateOrdered, tempEmp, approved, paid));
+		}		
+		
+		if (approved) {
+			UI next = new ManagerUI();
+			next.startInterface();	
+		}
+		else
+			startInterface();
+		
 	}
 	
 	// Gives user options to register, add or remove stock from the system
