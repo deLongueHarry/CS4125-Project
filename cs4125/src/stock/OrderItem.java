@@ -12,7 +12,7 @@ public class OrderItem
 	{
 		this.itemID = itemID;
 		this.prod = prod;
-		this.qty = qty * prod.getMinimumOrder();
+		this.qty = qty;
 		this.price = prod.getCostPrice();
 	}
 	

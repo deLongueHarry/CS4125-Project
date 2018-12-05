@@ -183,14 +183,16 @@ public class StoreFacade {
 		Scanner orderScanner = new Scanner(orderFile);
 		
 		while(orderScanner.hasNext()) {
+			
 			String[] orderStr = orderScanner.nextLine().split(",");
-			boolean approved;
-			boolean paid;
+			
+			boolean approved, paid;
 			ArrayList<OrderItem> items = new ArrayList<>();
 			
 			if (orderStr[1] != null) {
 				String[] orderItemIds = orderStr[1].split("/");
 				for (int i = 0; i < orderItemIds.length; i++)	{
+					
 					int idToCompare = Integer.parseInt(orderItemIds[i]);
 					for (int j = 0; j < orderItems.size(); j++)	{
 						if (idToCompare == orderItems.get(j).getItmID())	{
@@ -202,15 +204,23 @@ public class StoreFacade {
 
 			approved = (orderStr[4].equalsIgnoreCase("true")) ? true : false;	
 			paid = (orderStr[5].equalsIgnoreCase("true")) ? true : false;		
-				
+			
+			Employee tempEmp = null;
 			for (int i = 0; i < employees.size(); i++)	{
-				if (Integer.parseInt(orderStr[3]) == employees.get(i).getID())	{
-					
-					Order tempOrd = new Order(Integer.parseInt(orderStr[0]), items, orderStr[2], employees.get(i), approved, paid);
-					tempOrd.setDateOrdered(orderStr[6]);
-					orders.add(tempOrd);
+				
+				int empID = 0;
+				try {
+					empID = Integer.parseInt(orderStr[3]);
+				}
+				catch (NumberFormatException emp) {
+				}
+				
+				if (empID == employees.get(i).getID())	{
+					tempEmp = employees.get(i);
 				}
 			}
+			Order tempOrd = new Order(Integer.parseInt(orderStr[0]), items, orderStr[2], tempEmp, approved, paid);
+			orders.add(tempOrd);
 		}
 		orderScanner.close();
 	}
@@ -328,10 +338,11 @@ public class StoreFacade {
 	public void checkStockLevels() throws ParseException {
 		
         SimpleDateFormat useByFormat = new SimpleDateFormat("dd-MM-yy");
-        ArrayList<OrderItem> items = new ArrayList<OrderItem>();
+        List<OrderItem> items = new ArrayList<>();
         
         Calendar c = Calendar.getInstance();   
-        String todaysDate = useByFormat.format(c.getTime());
+        Date today = c.getTime();
+        String todaysDate = useByFormat.format(today);
         
         c.set(Calendar.HOUR_OF_DAY, 18);
         c.set(Calendar.MINUTE, 50);
@@ -343,13 +354,10 @@ public class StoreFacade {
         c.add(Calendar.DATE, -8);
         Date expired = c.getTime();
         
-        //System.out.println(shopHoursFormat.format(COBnextWeek));
-	
+        double totalCost = 0.0;
 		for (int i = 0; i < stockItems.size(); i++) {
 			
-			int threshold = 40;
-			int typicalOrderQty = 80;
-			
+			int threshold = 50;
 			StockItem stock = stockItems.get(i);
 			Product prod = stock.getProduct();		
 			Date productDate = useByFormat.parse(stock.getUseBy());
@@ -363,28 +371,36 @@ public class StoreFacade {
 				stock.setPrice(stock.getPrice() * 0.5);
 			}
 			
-			if (stock.getQty() < threshold || productDate.compareTo(COBnextWeek) < 0) {
+			// Only adds new order if stock is low or products out of date, and only after COB time to avoid duplicate orders
+			if ((stock.getQty() < threshold || productDate.compareTo(COBnextWeek) < 0) 
+							&& (today.compareTo(COBtoday) > 0)) {
 				
-				int ID = 0;
+				int orderItmID = 1;
+				if (orderItems != null) {
+					orderItmID = orderItems.get(orderItems.size()-1).getItmID() + 1;
+				}
 				for (int j = 0; j < stockItems.size(); j++) {
 									
 					Product productToCompare = stockItems.get(j).getProduct();
-					if (productToCompare.getProductName().equals(prod.getProductName())) 			
-						items.add(new OrderItem((ID++), prod, typicalOrderQty/prod.getMinimumOrder()));
+					if (productToCompare.getProductID() == prod.getProductID()) { 		
+						
+						int orderQty = 20 * prod.getMinimumOrder();
+						OrderItem tempOI = new OrderItem((orderItmID++), prod, orderQty);
+						orderItems.add(tempOI);
+						items.add(tempOI);
+						totalCost += orderQty * prod.getCostPrice();
+					}
 				}
+				
+				if (orders != null) {
+					int orderID = orders.get(orders.size()-1).getOrderID() + 1;
+					
+					// System generated orders are approved automatically
+					boolean paid = ac.paymentSuccessful(totalCost);
+					Order todaysOrder = new Order(orderID, items, todaysDate, null, true, paid);
+					orders.add(todaysOrder);	
+				}	
 			}					
-		}
-		
-		if (items != null) {
-			
-			int orderID = 1;
-			if (orders != null) {
-				orderID = orders.get(orders.size() - 1).getOrderID();
-			}
-			
-			// System generated orders are approved automatically
-			Order todaysOrder = new Order(orderID, items, todaysDate, null, true, false);
-			orders.add(todaysOrder);			
-		}		
+		}	
 	}
 }

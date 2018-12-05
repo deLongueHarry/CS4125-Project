@@ -52,6 +52,7 @@ public class LoginUI implements UI {
 				
 				Criteria crit = new CriteriaManager();
 				List<Employee> managers = crit.meetCriteria(StoreFacade.employees);
+				
 				crit = new CriteriaStockEmployee();
 				List<Employee> stockEmps = crit.meetCriteria(StoreFacade.employees);
 				

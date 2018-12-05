@@ -117,15 +117,13 @@ public class TransactionsUI	implements UI	{
 		check = false;
 		String input = "";
 		//Receives the items being added to the Sale from the addItems() method
-		while(!check)	{
-			
+		while(!check)	{			
 			String checker = addItems(products, current);
 			if (!(checker.equals("done")))	{
 				input += checker;
 			}
 			else
-				check = true;
-			
+				check = true;			
 		}
 		//Uses input to add the items to the ArrayList of StockItems
 		String[] inputArr = input.split(",");
@@ -147,7 +145,7 @@ public class TransactionsUI	implements UI	{
 				}
 			}
 		}
-		//Getting customer card numbers from their profie or adding a new one 
+		//Getting customer card numbers from their profile or adding a new one 
 		if (current.getCreditCard() != "")	{
 			cardNumb = current.getCreditCard();
 		}
@@ -227,6 +225,7 @@ public class TransactionsUI	implements UI	{
 		}
 	}
 	
+	
 	//Adds the items to the new Sale
 	//Author: Alex
 	public String addItems(List<Product> products, Customer current)	{
@@ -242,7 +241,7 @@ public class TransactionsUI	implements UI	{
 		choice = in.nextLine().toLowerCase();
 		
 		//Receives the product name or exits method when customer is finished
-		if (choice.equals("done"))	{
+		if (choice.equals("0"))	{
 			out = "done";
 		}
 		//Checks product's allergen information vs customer's allergens

@@ -162,28 +162,28 @@ public class DataPersistence {
 		ord.createNewFile();
 		eachLine = "";
 		
-		for (i = 0; i < orders.size() - 1; i++)	{
+		for (i = 0; i < orders.size(); i++)	{
 			
 			Order temp = orders.get(i);
 			eachLine += Integer.toString(temp.getOrderID()) + ",";
 			
-			if (temp.getOrderItems() != null)	{
-				listSize = temp.getOrderItems().size();
-				for (j = 0; j < listSize; j++)	{
-					eachLine += Integer.toString(temp.getOrderItems().get(j).getItmID());
-					if (j != listSize - 1)
-						eachLine += "/";
-				}	
-				
-				eachLine += "," + temp.getDateOrdered() + "," + temp.getEmp().getID() + ","
-						+ (temp.isApproved() ? "true," : "false,")
-							+ (temp.isPaid() ? "true," : "false,")
-								+ temp.getDateOrdered() + ",";
-			}
+			listSize = temp.getOrderItems().size();
+			for (j = 0; j < listSize; j++)	{
+				eachLine += Integer.toString(temp.getOrderItems().get(j).getItmID());
+				if (j != listSize - 1)
+					eachLine += "/";
+			}	
 			
+			eachLine += "," + temp.getDateOrdered() + ",";
+			if (temp.getEmp() == null)
+				eachLine += "0,";
+			else
+				eachLine += temp.getEmp().getID() + ",";
 			
-
-			if (i != orders.size() - 2)
+			eachLine += (temp.isApproved() ? "true," : "false,")
+						+ (temp.isPaid() ? "true," : "false,");
+			
+			if (i != orders.size() - 1)
 				eachLine += "\n";
 		}
 		try (BufferedWriter ordWriter = new BufferedWriter(new FileWriter(ord));)	{

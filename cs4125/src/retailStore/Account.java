@@ -4,11 +4,11 @@ package retailStore;
 public class Account 
 {
 	private static Account ac = new Account(0);
-	private double amount;
+	private double balance;
 	
-	private Account(double xAm)
+	private Account(double balance)
 	{
-		this.amount = xAm;
+		this.balance = balance;
 	}
 
 	public static Account instanceOf()
@@ -18,18 +18,27 @@ public class Account
 	
 	public double getAmount()
 	{
-		return amount;
+		return balance;
 	}
-	public double updateAmount(double aAmount, boolean sale)
+	public double updateAmount(double amount, boolean sale)
 	{
 		if (sale)
 		{
-			this.amount += aAmount;
+			this.balance += amount;
 		}
 		else
 		{
-			this.amount -= aAmount;
+			this.balance -= amount;
 		}
-		return amount;
+		return balance;
 	}	
+	
+	public boolean paymentSuccessful (double purchase) {
+		
+		if (balance - purchase > 0) {
+			balance -= purchase;
+			return true;
+		}
+		return false;		
+	}
 }

@@ -2,6 +2,8 @@ package ui;
 
 import java.util.Scanner;
 
+import employee.Employee;
+import retailStore.Account;
 import retailStore.StoreFacade;
 import stock.*;
 
@@ -128,7 +130,6 @@ public class StockEmployeeUI implements UI {
 					}
 				}
 				
-				
 			} catch (NumberFormatException p) {
 				System.out.println(error);
 			}
@@ -150,7 +151,10 @@ public class StockEmployeeUI implements UI {
 			Order lastOrder = StoreFacade.orders.get(StoreFacade.orders.size()-1);
 			orderID = (lastOrder.getOrderID()) + 1;
 			
-			paid = acc.paymentSuccessful(totalOrderCost);			
+			if (approved)
+				paid = acc.paymentSuccessful(totalOrderCost);
+			else
+				paid = false;
 			StoreFacade.orders.add(new Order(orderID, items, dateOrdered, tempEmp, approved, paid));
 		}		
 		
@@ -162,6 +166,7 @@ public class StockEmployeeUI implements UI {
 			startInterface();
 		
 	}
+
 	
 	// Gives user options to register, add or remove stock from the system
 	// Author: Michael

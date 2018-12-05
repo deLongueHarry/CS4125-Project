@@ -19,7 +19,7 @@ public class StoreUI implements UI {
 				if (input1 == 1) {
 					
 					validSelection = true;
-					UI customerUI = new CustomerUI();
+					UI customerUI = new TransactionsUI();
 					customerUI.startInterface();
 				}
 				else if (input1 == 2) {
