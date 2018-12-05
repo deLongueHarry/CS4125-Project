@@ -1,4 +1,0 @@
-201,Kerrymead Butter,Dairy,0.75,Kerry Gold,10,mi
-202,GoldenVale Milk,Dairy,0.6,Golden Vale,mi
-203,Sesame Mix,Savoury,1.20,Mix Corp,n/se/pn/gl
-204,Mars Bar,Sweets,1.00,Mars,m/pn/eg
